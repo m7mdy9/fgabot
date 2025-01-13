@@ -54,7 +54,7 @@ async function initialize() {
 }
 
 async function registerSlashCommands(guildId) {
-    const rankData1 = rankData.slice(1, 10);
+    const rankData1 = rankData.slice(1, 11);
     const rankChoices = rankData1.map(rank => ({ name: rank.name, value: rank.name }));
 
     const commands = [
@@ -75,10 +75,12 @@ async function registerSlashCommands(guildId) {
             .toJSON(),
         new SlashCommandBuilder()
             .setName(`phaseupdate`)
-            .setDescription(`Sync your current roles with your group rank`),
+            .setDescription(`Sync your current group roles with current roles`),
         new SlashCommandBuilder()
             .setName(`test`)
-            .setDescription(`test`)
+            .setDescription(`test`),
+            new SlashCommandBuilder()
+            .setName(`info`)
     ];
 
     const rest = new REST({ version: `10` }).setToken(botToken);
@@ -186,7 +188,7 @@ client.on(`interactionCreate`, async interaction => {
         const executorId = await retry(async () => await noblox.getIdFromUsername(interaction.member.displayName));
         const executorRankIndex = await retry(async () => await getUserRankIndex(executorId));
         let UserPhase = ""
-        if (executorRankIndex == 0) {
+        if (executorRankIndex <= 0) {
             return interaction.editReply(`You are not in the group. Join the [Federal Guard Academy group](<https://www.roblox.com/communities/35417960/FRP-Federal-Guard-Academy#!/about>).`);
         }
         const executorRoles = interaction.member.roles.cache.map(role => role.name);
@@ -243,6 +245,13 @@ client.on(`interactionCreate`, async interaction => {
         getAuditLogData();
         interaction.editReply("good job")
     }
+    if(interaction.commandName === `info`){
+        const embed1 = new EmbedBuilder()
+            .setTitle("Information")
+            .setDescription(`The bot was developed and made by <@!${ownerId}> \nCurrent Ping for the bot is: ${client.ws.ping} (Can be inaccurate) \nUptime: ${Math.round(interaction.client.uptime / 60000)}`)
+            .setColor("DarkBlue")
+    }
+    await interaction.editReply({ embeds: [embed1] });
 });
 const axios = require('axios');
 
