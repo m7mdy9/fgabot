@@ -251,8 +251,9 @@ client.on(`interactionCreate`, async interaction => {
             .setTitle("Information")
             .setDescription(`The bot was developed and made by <@!${ownerId}> \nCurrent Ping for the bot is: ${client.ws.ping} (Can be inaccurate) \nUptime: ${Math.round(interaction.client.uptime / 60000)}`)
             .setColor("DarkBlue")
+            await interaction.editReply({ embeds: [embed1] });
     }
-    await interaction.editReply({ embeds: [embed1] });
+    
 });
 const axios = require('axios');
 
