@@ -81,6 +81,7 @@ async function registerSlashCommands(guildId) {
             .setDescription(`test`),
             new SlashCommandBuilder()
             .setName(`info`)
+            .setDescription(`Information`)
     ];
 
     const rest = new REST({ version: `10` }).setToken(botToken);
