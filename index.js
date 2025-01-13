@@ -249,7 +249,7 @@ client.on(`interactionCreate`, async interaction => {
     if(interaction.commandName === `info`){
         const embed1 = new EmbedBuilder()
             .setTitle("Information")
-            .setDescription(`The bot was developed and made by <@!${ownerId}> \nCurrent Ping for the bot is: ${client.ws.ping} (Can be inaccurate) \nUptime: ${Math.round(interaction.client.uptime / 60000)}`)
+            .setDescription(`The bot was developed and made by <@!${ownerId}> \n\nCurrent Ping for the bot is: **${client.ws.ping}** (Can be inaccurate) \n\nUptime: **${Math.round(interaction.client.uptime / 60000)} minutes**`)
             .setColor("DarkBlue")
             await interaction.editReply({ embeds: [embed1] });
     }
