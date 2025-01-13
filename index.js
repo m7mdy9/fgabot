@@ -247,13 +247,17 @@ client.on(`interactionCreate`, async interaction => {
         interaction.editReply("good job")
     }
     if(interaction.commandName === `info`){
+        try {
         const embed1 = new EmbedBuilder()
             .setTitle("Information")
             .setDescription(`The bot was developed and made by <@!${ownerId}> \n\nCurrent Ping for the bot is: **${client.ws.ping}ms** (Can be inaccurate) \n\nUptime: **${Math.round(interaction.client.uptime / 60000)} minutes**`)
             .setColor("DarkBlue")
             await interaction.editReply({ embeds: [embed1] });
+        } catch (err){
+            console.log(err)
+        }
     }
-    
+
 });
 const axios = require('axios');
 
