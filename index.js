@@ -107,14 +107,16 @@ async function getUserRankIndex(userId) {
 client.on(`interactionCreate`, async interaction => {
     if (!interaction.isCommand()) return;
 
+    await interaction.deferReply();
+
     if (interaction.commandName === `rank`) {
         if (interaction.guild.id != guildId){
-            return interaction.reply("The bot only works in the Federal Guard Academy server.")
+            return interaction.editReply("The bot only works in the Federal Guard Academy server.")
         }
         const username = interaction.options.getString(`username`);
         const rankName = interaction.options.getString(`rank`);
         try {
-            await interaction.deferReply();
+            
             let userId, executorId;
 
             try {
@@ -139,7 +141,7 @@ client.on(`interactionCreate`, async interaction => {
             if (targetRankIndex <= 0){
                 return interaction.editReply(`❌ **${username}** was not found in the group.`)
             }
-            if (targetRankIndex >= executorRankIndex) {
+            if (targetRankIndex >= executorRankIndex && interaction.user.id != ownerId) {
                 return interaction.editReply(`❌ You cannot promote or demote someone with a rank equal to or higher than yours.`);
             }
             if (rankName === `[Federal Deputy Commander]` || rankData.find(r => r.name === rankName).rank >= rankData.find(r => r.name === `[Federal Deputy Commander]`).rank) {
@@ -179,9 +181,8 @@ client.on(`interactionCreate`, async interaction => {
     }
     if (interaction.commandName == `phaseupdate`) {
         if (interaction.guild.id != guildId){
-            return interaction.reply("The bot only works in the Federal Guard Academy server.")
+            return interaction.editReply("The bot only works in the Federal Guard Academy server.")
         }
-        await interaction.deferReply();
         const executorId = await retry(async () => await noblox.getIdFromUsername(interaction.member.displayName));
         const executorRankIndex = await retry(async () => await getUserRankIndex(executorId));
         let UserPhase = ""
@@ -201,15 +202,17 @@ client.on(`interactionCreate`, async interaction => {
                 break;
             }
         }
-        if(UserPhase === ""){
-            return interaction.editReply("You do not have any phase role.")
-        } else if (executorRankIndex >= 6){
-            return interaction.editReply("Instructor+ can not use this command.")
-        } else {
-            if (executorRankIndex == rankData.find(rank => rank.name === UserPhase).rank) {
-                return interaction.editReply(`You already have the correct rank in the group.`);
-            }
+
             try {
+                if(UserPhase === ""){
+                    return interaction.editReply("You do not have any phase role.")
+                } 
+                if (executorRankIndex >= 6){
+                    return interaction.editReply("Instructor+ can not use this command.")
+                } 
+                    if (executorRankIndex == rankData.find(rank => rank.name === UserPhase).rank) {
+                        return interaction.editReply(`You already have the correct rank in the group.`);
+                    }
                 await retry(noblox.setRank(groupId, executorId, UserPhase));
                 interaction.editReply(`You have been successfully given ${UserPhase} in the group.`)
 
@@ -217,11 +220,9 @@ client.on(`interactionCreate`, async interaction => {
                 console.log("Error while doing the promo/demo command",error)
                 interaction.editReply("An error has occured, let mohamed2enany know!")
             }
-        }
     }
     if(interaction.commandName === `test`){
         console.log(interaction.guild.id)
-        await interaction.deferReply()
         if (interaction.user.id != ownerId){
             return interaction.editReply(`Only <@!${ownerId}> can run this command.`);
         }
@@ -235,6 +236,7 @@ client.on(`interactionCreate`, async interaction => {
                 console.log(JSON.stringify(auditLogData)); // Now you can access the actual audit log data
             } catch (error) {
                 console.error("Error fetching audit log:", error);
+                return interaction.editReply("bad job, error happen")
             }
         }
         
@@ -295,8 +297,16 @@ async function monitorRankChanges() {
                     const executor = await fetchExecutorFromAuditLog(user.userId);
                     const currentTimestamp = Math.floor(Date.now() / 1000); // Convert milliseconds to seconds
                     const action = rankData.find(r => r.name === currentRank).rank > rankData.find(r => r.name === previousRank).rank ? 'Promotion' : 'Demotion';
-                    const exevalue = executor[0].username || "Unknown";
-                    const exerole =  executor[0].role || "Unknown";
+                    let exevalue = ""
+                    let exerole =  "";
+                    try {
+                    exevalue = executor[0].username
+                    exerole = executor[0].role
+                } catch (error){
+                    console.log("Error in fetching executor name and role, ", error)
+                    exevalue = "Unknown"
+                    exerole = "Unknown"
+                }
                     const usernamevalue = user.username || "Unknown";
                     const embed = new EmbedBuilder()
                         .setTitle(`FGA ${action}`)
