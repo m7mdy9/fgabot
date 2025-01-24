@@ -398,7 +398,7 @@ client.on(`interactionCreate`, async interaction => {
                   .setColor("DarkRed")
                   .setTimestamp(Date.now());
             await chnlsend("1332366775811051530", {embeds:[embed1]})
-            await usertodm.send({ embeds:[embed1] })
+            await usertodm.send({ embeds:[embed2] })
             await interaction.editReply(`User <@!${user.id}> suspended successfully.`)
         } catch(error){
             console.error(error)
