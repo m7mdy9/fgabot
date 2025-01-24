@@ -69,14 +69,15 @@ function makedurationbigger(duration) {
         case 'm': return value + " minutes"        // Minutes to milliseconds
         default: return null;
     }
+
 }
 async function chnlsend(channel, message){
     const logChannel = await client.channels.fetch(channel);
-    logChannel.send(message)
+    return await logChannel.send(message)
 }
 async function errsend(message){
     const logChannel = await client.channels.fetch(e_channel_Id);
-    logChannel.send(`Error:\n\`\`\`${message.toString()}\`\`\``)
+    return await logChannel.send(`Error:\n\`\`\`${message.toString()}\`\`\``)
 }
 
 async function initialize() {
@@ -487,7 +488,8 @@ async function monitorRankChanges() {
             }
         }
     } catch (error) {
-        logChannelId.send("An error has occured.")
+        const logChannel = await client.channels.fetch(logChannelId);
+if (logChannel) logChannel.send("An error has occurred.");
         errsend(`Error in rank minotring: ${error.message}`)
         console.error('Error monitoring rank changes:', error);
     }
