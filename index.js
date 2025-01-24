@@ -388,7 +388,7 @@ client.on(`interactionCreate`, async interaction => {
             ]
             await chnlsend(1332366775811051530, {embeds:embed})
         } catch(err){
-            console.err(err)
+            console.error(err)
             errsend("Error in suspend: ",err)
         }
     }
