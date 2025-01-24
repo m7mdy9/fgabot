@@ -72,7 +72,7 @@ function makedurationbigger(duration) {
 }
 async function chnlsend(channel, message){
     const logChannel = await client.channels.fetch(channel);
-    logChannel.send(message.toString())
+    logChannel.send(message)
 }
 async function errsend(message){
     const logChannel = await client.channels.fetch(e_channel_Id);
@@ -398,8 +398,8 @@ client.on(`interactionCreate`, async interaction => {
                   .setColor("DarkRed")
                   .setTimestamp(Date.now())
 
-            await chnlsend("1332366775811051530", {embeds:[embed1]})
-            await usertodm.send({ embeds:[embed2] })
+            await chnlsend("1332366775811051530", { embeds: [embed1] })
+            await usertodm.send({ embeds: [embed2] })
             await interaction.editReply(`User <@!${user.id}> suspended successfully.`)
         } catch(error){
             console.error(error)
