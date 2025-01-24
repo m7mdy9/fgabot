@@ -387,7 +387,7 @@ client.on(`interactionCreate`, async interaction => {
                   },
                   { name: '\u200b', value: '\u200b', inline:false},
                   {
-                    name: "Expiration date",value: `<t:${unbanTime}:F> (<t:${unbanTime}:R>)`,"inline": true}
+                    name: "Expiration date",value: `<t:${unbanTime}:F> (<t:${unbanTime}:R>)`,inline: true}
                   ];
             const  embed2 = new EmbedBuilder()
                   .setTitle("Suspension")
