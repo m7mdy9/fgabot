@@ -387,6 +387,7 @@ client.on(`interactionCreate`, async interaction => {
                     name: "Expiration date",value: `<t:${unbanTime}:F> (<t:${unbanTime}:R>)`,"inline": true}
             ]
             await chnlsend(1332366775811051530, {embeds:embed})
+            await interaction.editReply(`User <@!${user.id}> suspended successfully.`)
         } catch(err){
             console.error(err)
             errsend("Error in suspend: ",err)
