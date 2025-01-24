@@ -347,7 +347,7 @@ client.on(`interactionCreate`, async interaction => {
             const proof = interaction.options.getString('proof')
             const member = interaction.guild.members.cache.get(user.id);
             const unbanTime = Math.floor((Date.now() + parseDuration(duration)) / 1000);
-            
+            const usertodm = await client.users.fetch(user.id)
             try {
                 executorId = await retry(async () => await noblox.getIdFromUsername(interaction.member.displayName));
                 executorRankIndex = await retry(async () => await getUserRankIndex(executorId));
@@ -359,7 +359,7 @@ client.on(`interactionCreate`, async interaction => {
                 return interaction.editReply(`❌ You do not have permission to use this command.`);
             }
             await member.roles.add("1302266631329808384")
-            const embed = new EmbedBuilder()
+            const embed1 = new EmbedBuilder()
             .setTimestamp(Date.now())
             .setTitle("New Suspension")
             .setColor(11272192)
@@ -389,7 +389,16 @@ client.on(`interactionCreate`, async interaction => {
                   {
                     name: "Expiration date",value: `<t:${unbanTime}:F> (<t:${unbanTime}:R>)`,"inline": true}
                   ]
-            await chnlsend("1332366775811051530", {embeds:embed})
+            const  embed2 = new EmbedBuilder()
+                  .setTitle("Suspension")
+                  .setDescription(`You have been suspending in the Federal Guard Academy for the following reason(s):
+                    \n- ${reason} \n\n
+                    
+                    If think you got suspended wrongly or something similar, direct message a Deputy Director or higher.`)
+                  .setColor("DarkRed")
+                  .setTimestamp(Date.now());
+            await chnlsend("1332366775811051530", {embeds:embed1})
+            await usertodm.send({ embeds:embed1 })
             await interaction.editReply(`User <@!${user.id}> suspended successfully.`)
         } catch(error){
             console.error(error)
