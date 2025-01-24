@@ -203,7 +203,7 @@ client.on(`interactionCreate`, async interaction => {
             try {
                 userId = await retry(async () => await noblox.getIdFromUsername(username));
             } catch(error) {
-                errsennd("Error came with the none matchingn user to be ranked: ",error)
+                errsend("Error came with the none matchingn user to be ranked: ",error)
                 return interaction.editReply(`❌ The username "${username}" was not found on Roblox.`);
             }
             const targetRankIndex = await retry(async () => await getUserRankIndex(userId))
