@@ -362,7 +362,7 @@ client.on(`interactionCreate`, async interaction => {
             const embed1 = new EmbedBuilder()
             .setTimestamp(Date.now())
             .setTitle("New Suspension")
-            .setColor(11272192)
+            .setColor("DarkNavy")
             .setDescription(`A new suspension has been made!`)
             .addFields[
                 {
@@ -391,10 +391,7 @@ client.on(`interactionCreate`, async interaction => {
                   ];
             const  embed2 = new EmbedBuilder()
                   .setTitle("Suspension")
-                  .setDescription(`You have been suspending in the Federal Guard Academy for ${makedurationbigger(duration)} for the following reason(s):
-                    \n- ${reason} \n\n
-                    
-                    If think you got suspended wrongly or something similar, direct message a Deputy Director or higher.`)
+                  .setDescription(`You have been suspending in the Federal Guard Academy for ${makedurationbigger(duration)} for the following reason(s):\n- ${reason} \n\nIf think you got suspended wrongly or something similar, direct message a Deputy Director or higher.`)
                   .setColor("DarkRed")
                   .setTimestamp(Date.now());
 
