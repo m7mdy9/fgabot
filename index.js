@@ -391,7 +391,7 @@ client.on(`interactionCreate`, async interaction => {
                   ]
             const  embed2 = new EmbedBuilder()
                   .setTitle("Suspension")
-                  .setDescription(`You have been suspending in the Federal Guard Academy for the following reason(s):
+                  .setDescription(`You have been suspending in the Federal Guard Academy for ${makedurationbigger(duration)} for the following reason(s):
                     \n- ${reason} \n\n
                     
                     If think you got suspended wrongly or something similar, direct message a Deputy Director or higher.`)
