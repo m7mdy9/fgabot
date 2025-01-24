@@ -361,14 +361,14 @@ client.on(`interactionCreate`, async interaction => {
             }
             await member.roles.add("1302266631329808384")
             const embed1 = new EmbedBuilder()
-            .setTimestamp(Date.now())
             .setTitle("New Suspension")
             .setColor("DarkNavy")
             .setDescription(`A new suspension has been made!`)
-            .addFields[
+            .setTimestamp(Date.now())
+            .addFields([
                 {
                   name: "Suspend",
-                  value: `<@!${member}>`,
+                  value: `<@!${user.id}>`,
                   inline: true
                 },
                 {
@@ -389,7 +389,7 @@ client.on(`interactionCreate`, async interaction => {
                   { name: '\u200b', value: '\u200b', inline:false},
                   {
                     name: "Expiration date",value: `<t:${unbanTime}:F> (<t:${unbanTime}:R>)`,inline: true}
-                  ];
+                  ]);
             const  embed2 = new EmbedBuilder()
                   .setTitle("Suspension")
                   .setDescription(`You have been suspending in the Federal Guard Academy for ${makedurationbigger(duration)} for the following reason(s):\n- ${reason} \n\nIf think you got suspended wrongly or something similar, direct message a Deputy Director or higher.`)
