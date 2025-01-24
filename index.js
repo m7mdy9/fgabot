@@ -196,6 +196,7 @@ client.on(`interactionCreate`, async interaction => {
                 interaction.editReply(`❌ Your current server nickname does not match any Roblox user.`);
                 return errsend("Error came with the 'non matching username' : ",error)
             }
+            const executorRankIndex = await retry(async () => await getUserRankIndex(executorId));
             if (executorRankIndex < rankData.find(rank => rank.name === `[Instructor]`).rank) {
                 return interaction.editReply(`❌ You do not have permission to use this command.`);
             }
@@ -205,7 +206,6 @@ client.on(`interactionCreate`, async interaction => {
                 errsennd("Error came with the none matchingn user to be ranked: ",error)
                 return interaction.editReply(`❌ The username "${username}" was not found on Roblox.`);
             }
-            const executorRankIndex = await retry(async () => await getUserRankIndex(executorId));
             const targetRankIndex = await retry(async () => await getUserRankIndex(userId))
             var Action = targetRankIndex < rankData.find(rank => rank.name === rankName).rank;
             let RankType = "";
