@@ -25,7 +25,7 @@ async function retry(fn, maxRetries = 3, delayMs = 2000) {
         try {
             return await fn();
         } catch (error) {
-            errsend(error.message)
+            errsend(`${error.message}`)
             lastError = error;
             attempts++;
             console.error(`Attempt ${attempts} failed. Retrying in ${delayMs / 1000} seconds...`);
@@ -159,7 +159,7 @@ async function registerSlashCommands(guildId) {
         });
         console.log(`✅ Slash commands registered successfully!`);
     } catch (error) {
-        errsend(error.message)
+        errsend(`${error.message}`)
         console.error(`Error registering commands:`, error);
     }
 }
@@ -169,7 +169,7 @@ async function getUserRankIndex(userId) {
         const rank = await noblox.getRankInGroup(groupId, userId);
         return rank;
     } catch (error) {
-        errsend(error.message)
+        errsend(`${error.message}`)
         return -1;
     }
 }
@@ -194,7 +194,7 @@ client.on(`interactionCreate`, async interaction => {
                 executorId = await retry(async () => await noblox.getIdFromUsername(interaction.member.displayName));
             } catch(error) {
                 interaction.editReply(`❌ Your current server nickname does not match any Roblox user.`);
-                return errsend("Error came with the 'non matching username' : ",error)
+                return errsend(`Error came with the non matching username: ${error.message}`)
             }
             const executorRankIndex = await retry(async () => await getUserRankIndex(executorId));
             if (executorRankIndex < rankData.find(rank => rank.name === `[Instructor]`).rank) {
@@ -203,7 +203,7 @@ client.on(`interactionCreate`, async interaction => {
             try {
                 userId = await retry(async () => await noblox.getIdFromUsername(username));
             } catch(error) {
-                errsend("Error came with the none matching user to be ranked: ",error)
+                errsend(`Error came with the none matching user to be ranked: ${error.message}`)
                 return interaction.editReply(`❌ The username "${username}" was not found on Roblox.`);
             }
             const targetRankIndex = await retry(async () => await getUserRankIndex(userId))
@@ -247,7 +247,7 @@ client.on(`interactionCreate`, async interaction => {
                 await logChannel.send(`\`The last rank change was made by ${interaction.member.displayName} to ${username} using the rank command.\``)
 
             } catch (error) {
-            errsend("Error in rank change: ",error.message)
+            errsend(`Error in rank change: ${error.message}`)
             console.error(`Error handling rank change:`, error);
             await interaction.editReply(`❌ An error occurred while processing this command.`);
         }
@@ -287,7 +287,7 @@ client.on(`interactionCreate`, async interaction => {
                 interaction.editReply(`You have been successfully given ${UserPhase} in the group.`)
 
             } catch(error){
-                errsend("Error in phase change", error.message)
+                errsend(`Error in phase change: ${error.message}`)
                 console.log("Error while doing the promo/demo command",error)
                 interaction.editReply("An error has occured, let mohamed2enany know!")
             }
@@ -306,7 +306,7 @@ client.on(`interactionCreate`, async interaction => {
                 const auditLogData = await noblox.getAuditLog(groupId, "ChangeRank", 1552234858, "Desc", 10); // Wait for the promise to resolve
                 console.log(JSON.stringify(auditLogData)); // Now you can access the actual audit log data
             } catch (error) {
-                errsend("Error in audit logs: ", error.message)
+                errsend(`Error in audit logs: ${error.message}`)
                 console.error("Error fetching audit log:", error);
                 return interaction.editReply("bad job, error happen")
             }
@@ -333,7 +333,7 @@ client.on(`interactionCreate`, async interaction => {
             .setColor("DarkBlue")
             await interaction.editReply({ embeds: [embed1] });
         } catch (error){
-            errsend("Error in info: ",error.message)
+            errsend(`Error in info: ${error.message}`)
             console.error(error)
         }
     }
@@ -396,13 +396,14 @@ client.on(`interactionCreate`, async interaction => {
                     
                     If think you got suspended wrongly or something similar, direct message a Deputy Director or higher.`)
                   .setColor("DarkRed")
-                  .setTimestamp(Date.now());
+                  .setTimestamp(Date.now())
+
             await chnlsend("1332366775811051530", {embeds:[embed1]})
             await usertodm.send({ embeds:[embed2] })
             await interaction.editReply(`User <@!${user.id}> suspended successfully.`)
         } catch(error){
             console.error(error)
-            errsend("Error in suspend: ", error.message)
+            errsend(`Error in suspend: ${error.message}`)
         }
     }
 });
@@ -427,7 +428,7 @@ async function fetchExecutorFromAuditLog(targetId) {
         return executorsWithRoles
         } catch (error) {
         console.error("Error fetching audit log:", error);
-        errsend(error.message)
+        errsend(`Error in fetch Audit log: ${error.message}`)
         return null;
         }
 }
@@ -465,7 +466,7 @@ async function monitorRankChanges() {
                     exevalue = executor[0].username
                     exerole = executor[0].role
                 } catch (error){
-                    errsend("Error in the values for promo embed: ",error.message)
+                    errsend(`Error in the values for promo embed: ${error.message}`)
                     console.log("Error in fetching executor name and role, ", error)
                     exevalue = "Unknown"
                     exerole = "Unknown"
@@ -490,7 +491,7 @@ async function monitorRankChanges() {
         }
     } catch (error) {
         logChannelId.send("An error has occured.")
-        errsend("Error in rank minotring: ",error.message)
+        errsend(`Error in rank minotring: ${error.message}`)
         console.error('Error monitoring rank changes:', error);
     }
 }
