@@ -344,7 +344,7 @@ client.on(`interactionCreate`, async interaction => {
             const user = interaction.options.getUser('target');
             const duration = interaction.options.getString('duration'); // e.g., "1d", "3h"
             const reason = interaction.options.getString('reason')
-            const proof = interaction.options.getStringn('proof')
+            const proof = interaction.options.getString('proof')
             const member = interaction.guild.members.cache.get(user.id);
             const unbanTime = Math.floor((Date.now() + parseDuration(duration)) / 1000);
             
