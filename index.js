@@ -340,7 +340,7 @@ client.on(`interactionCreate`, async interaction => {
     if(interaction.commandName === `suspend`){
 
         try {
-            let userId, executorId;
+            let executorRankIndex, executorId;
             const user = interaction.options.getUser('target');
             const duration = interaction.options.getString('duration'); // e.g., "1d", "3h"
             const reason = interaction.options.getString('reason')
@@ -350,14 +350,17 @@ client.on(`interactionCreate`, async interaction => {
             
             try {
                 executorId = await retry(async () => await noblox.getIdFromUsername(interaction.member.displayName));
+                executorRankIndex = await retry(async () => await getUserRankIndex(executorId));
             } catch(err) {
                 return interaction.editReply(`❌ Your current server nickname does not match any Roblox user.`);
             }
+            
             if (executorRankIndex < rankData.find(rank => rank.name === `[Deputy Director]`).rank) {
                 return interaction.editReply(`❌ You do not have permission to use this command.`);
             }
             await member.roles.add(1302266631329808384)
             const embed = new EmbedBuilder()
+            .setTimestamp(Date.now())
             .setTitle("New Suspension")
             .setColor(11272192)
             .setDescription(`A new suspension has been made!`)
@@ -385,7 +388,7 @@ client.on(`interactionCreate`, async interaction => {
                   { name: '\u200b', value: '\u200b', inline:false},
                   {
                     name: "Expiration date",value: `<t:${unbanTime}:F> (<t:${unbanTime}:R>)`,"inline": true}
-            ]
+                  ]
             await chnlsend(1332366775811051530, {embeds:embed})
             await interaction.editReply(`User <@!${user.id}> suspended successfully.`)
         } catch(err){
