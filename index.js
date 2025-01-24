@@ -397,8 +397,8 @@ client.on(`interactionCreate`, async interaction => {
                     If think you got suspended wrongly or something similar, direct message a Deputy Director or higher.`)
                   .setColor("DarkRed")
                   .setTimestamp(Date.now());
-            await chnlsend("1332366775811051530", {embeds:embed1})
-            await usertodm.send({ embeds:embed1 })
+            await chnlsend("1332366775811051530", {embeds:[embed1]})
+            await usertodm.send({ embeds:[embed1] })
             await interaction.editReply(`User <@!${user.id}> suspended successfully.`)
         } catch(error){
             console.error(error)
