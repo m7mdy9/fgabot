@@ -381,12 +381,12 @@ client.on(`interactionCreate`, async interaction => {
                     value: `This suspension will last for ${makedurationbigger(duration)}`,
                     inline: true
                   },
+                  { name: '\u200b', value: '\u200b', inline:false},
                   {
                     name: "Issued by",
                     value: `<@!${interaction.member.id}>`,
                     inline: true
                   },
-                  { name: '\u200b', value: '\u200b', inline:false},
                   {
                     name: "Expiration date",value: `<t:${unbanTime}:F> (<t:${unbanTime}:R>)`,inline: true}
                   ]);
