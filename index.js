@@ -10,7 +10,7 @@ const logChannelId = process.env.channelID;
 const clientId = process.env.CLIENTID;
 const guildId = process.env.GUILDID;
 const ownerId = process.env.ownerId
-const e_channel_Id = 1332377984195235973;
+const e_channel_Id = "1332377984195235973";
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 let rankData = [];
 let previousGroupRanks = {};
@@ -358,7 +358,7 @@ client.on(`interactionCreate`, async interaction => {
             if (executorRankIndex < rankData.find(rank => rank.name === `[Deputy Director]`).rank) {
                 return interaction.editReply(`❌ You do not have permission to use this command.`);
             }
-            await member.roles.add(1302266631329808384)
+            await member.roles.add("1302266631329808384")
             const embed = new EmbedBuilder()
             .setTimestamp(Date.now())
             .setTitle("New Suspension")
@@ -389,7 +389,7 @@ client.on(`interactionCreate`, async interaction => {
                   {
                     name: "Expiration date",value: `<t:${unbanTime}:F> (<t:${unbanTime}:R>)`,"inline": true}
                   ]
-            await chnlsend(1332366775811051530, {embeds:embed})
+            await chnlsend("1332366775811051530", {embeds:embed})
             await interaction.editReply(`User <@!${user.id}> suspended successfully.`)
         } catch(err){
             console.error(err)
