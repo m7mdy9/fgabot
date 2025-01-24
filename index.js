@@ -388,7 +388,7 @@ client.on(`interactionCreate`, async interaction => {
                   { name: '\u200b', value: '\u200b', inline:false},
                   {
                     name: "Expiration date",value: `<t:${unbanTime}:F> (<t:${unbanTime}:R>)`,"inline": true}
-                  ]
+                  ];
             const  embed2 = new EmbedBuilder()
                   .setTitle("Suspension")
                   .setDescription(`You have been suspending in the Federal Guard Academy for ${makedurationbigger(duration)} for the following reason(s):
@@ -396,7 +396,7 @@ client.on(`interactionCreate`, async interaction => {
                     
                     If think you got suspended wrongly or something similar, direct message a Deputy Director or higher.`)
                   .setColor("DarkRed")
-                  .setTimestamp(Date.now())
+                  .setTimestamp(Date.now());
 
             await chnlsend("1332366775811051530", { embeds: [embed1] })
             await usertodm.send({ embeds: [embed2] })
