@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Client, GatewayIntentBits, EmbedBuilder, REST, Routes, SlashCommandBuilder, SortOrderType } = require('discord.js');
+const { Client, GatewayIntentBits, EmbedBuilder, REST, Routes, SlashCommandBuilder, SortOrderType, parseEmoji } = require('discord.js');
 const noblox = require('noblox.js');
 
 noblox.settings.timeout = 120000;
@@ -10,7 +10,7 @@ const logChannelId = process.env.channelID;
 const clientId = process.env.CLIENTID;
 const guildId = process.env.GUILDID;
 const ownerId = process.env.ownerId
-
+const e_channel_Id = 1332377984195235973;
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 let rankData = [];
 let previousGroupRanks = {};
@@ -25,6 +25,7 @@ async function retry(fn, maxRetries = 3, delayMs = 2000) {
         try {
             return await fn();
         } catch (error) {
+            errsend(error)
             lastError = error;
             attempts++;
             console.error(`Attempt ${attempts} failed. Retrying in ${delayMs / 1000} seconds...`);
@@ -35,6 +36,47 @@ async function retry(fn, maxRetries = 3, delayMs = 2000) {
     // If we reach here, all attempts have failed
     console.error(`Max retries reached. Last error:`, lastError);
     throw lastError; // Rethrow the last error encountered
+}
+
+function parseDuration(duration) {
+    const regex = /^(\d+)([dhm])$/; // Matches formats like "1d", "3h", "15m"
+    const match = duration.match(regex);
+
+    if (!match) return null;
+
+    const value = parseInt(match[1], 10);
+    const unit = match[2];
+
+    switch (unit) {
+        case 'd': return value * 24 * 60 * 60 * 1000; // Days to milliseconds
+        case 'h': return value * 60 * 60 * 1000;      // Hours to milliseconds
+        case 'm': return value * 60 * 1000;          // Minutes to milliseconds
+        default: return null;
+    }
+}
+function makedurationbigger(duration) {
+    const regex = /^(\d+)([dhm])$/; // Matches formats like "1d", "3h", "15m"
+    const match = duration.match(regex);
+
+    if (!match) return null;
+
+    const value = parseInt(match[1], 10);
+    const unit = match[2];
+
+    switch (unit) {
+        case 'd': return value + " days" // Days to milliseconds
+        case 'h': return value +  " hours"   // Hours to milliseconds
+        case 'm': return value + " minutes"        // Minutes to milliseconds
+        default: return null;
+    }
+}
+async function chnlsend(channel, message){
+    const logChannel = await client.channels.fetch(parseInt(channel));
+    logChannel.send(message.toString())
+}
+async function errsend(message){
+    const logChannel = await client.channels.fetch(e_channel_Id);
+    logChannel.send(`Error:\n\`\`\`${message.toString()}\`\`\``)
 }
 
 async function initialize() {
@@ -81,7 +123,30 @@ async function registerSlashCommands(guildId) {
             .setDescription(`test`),
             new SlashCommandBuilder()
             .setName(`info`)
-            .setDescription(`Information`)
+            .setDescription(`Information`),
+        new SlashCommandBuilder()
+            .setName(`suspend`)
+            .setDescription(`Used to suspend Fedearl Guard Academy members by Deputy Director or higher.`)
+            .addUserOption(option =>
+                option.setName(`target`)
+                .setDescription(`User to be suspended`)
+                .setRequired(true)
+            )
+            .addStringOption(option =>
+                option.setName('duration')
+                .setDescription('Duration of the ban (e.g., 1d, 3h, 15m !MUST BE LIKE THAT!)')
+                .setRequired(true)
+            )
+            .addStringOption(option =>
+                option.setName("reason")
+                .setDescription("Reason for the suspension")
+                .setRequired(true)
+            )
+            .addStringOption(option =>
+                option.setName(`proof`)
+                .setDescription(`You must here put a discord messsage link for the strike log message from it's corressponding channel`)
+                .setRequired(true)
+             )
     ];
 
     const rest = new REST({ version: `10` }).setToken(botToken);
@@ -94,6 +159,7 @@ async function registerSlashCommands(guildId) {
         });
         console.log(`✅ Slash commands registered successfully!`);
     } catch (error) {
+        errsend(error)
         console.error(`Error registering commands:`, error);
     }
 }
@@ -103,6 +169,7 @@ async function getUserRankIndex(userId) {
         const rank = await noblox.getRankInGroup(groupId, userId);
         return rank;
     } catch (error) {
+        errsend(error)
         return -1;
     }
 }
@@ -111,36 +178,38 @@ client.on(`interactionCreate`, async interaction => {
     if (!interaction.isCommand()) return;
 
     await interaction.deferReply();
+    if (interaction.guild.id != guildId && interaction.user.id != ownerId){
+        return interaction.editReply("The bot only works in the Federal Guard Academy server.")
+    }
 
     if (interaction.commandName === `rank`) {
-        if (interaction.guild.id != guildId){
-            return interaction.editReply("The bot only works in the Federal Guard Academy server.")
-        }
         const username = interaction.options.getString(`username`);
         const rankName = interaction.options.getString(`rank`);
         try {
             
             let userId, executorId;
-
-            try {
-                userId = await retry(async () => await noblox.getIdFromUsername(username));
-            } catch(err) {
-                return interaction.editReply(`❌ The username "${username}" was not found on Roblox.`);
-            }
-
+            
+            
             try {
                 executorId = await retry(async () => await noblox.getIdFromUsername(interaction.member.displayName));
             } catch(err) {
-                return interaction.editReply(`❌ Your current Discord display name does not match any Roblox user.`);
+                interaction.editReply(`❌ Your current server nickname does not match any Roblox user.`);
+                return errsend("Error came with the 'non matching username' : ",err)
+            }
+            if (executorRankIndex < rankData.find(rank => rank.name === `[Instructor]`).rank) {
+                return interaction.editReply(`❌ You do not have permission to use this command.`);
+            }
+            try {
+                userId = await retry(async () => await noblox.getIdFromUsername(username));
+            } catch(err) {
+                errsennd("Error came with the none matchingn user to be ranked: ",err)
+                return interaction.editReply(`❌ The username "${username}" was not found on Roblox.`);
             }
             const executorRankIndex = await retry(async () => await getUserRankIndex(executorId));
             const targetRankIndex = await retry(async () => await getUserRankIndex(userId))
             var Action = targetRankIndex < rankData.find(rank => rank.name === rankName).rank;
             let RankType = "";
-
-            if (executorRankIndex < rankData.find(rank => rank.name === `[Instructor]`).rank) {
-                return interaction.editReply(`❌ You do not have permission to use this command.`);
-            }
+            
             if (targetRankIndex <= 0){
                 return interaction.editReply(`❌ **${username}** was not found in the group.`)
             }
@@ -178,14 +247,12 @@ client.on(`interactionCreate`, async interaction => {
                 await logChannel.send(`\`The last rank change was made by ${interaction.member.displayName} to ${username} using the rank command.\``)
 
             } catch (error) {
+            errsend("Error in rank change: ",error)
             console.error(`Error handling rank change:`, error);
             await interaction.editReply(`❌ An error occurred while processing this command.`);
         }
     }
     if (interaction.commandName == `phaseupdate`) {
-        if (interaction.guild.id != guildId){
-            return interaction.editReply("The bot only works in the Federal Guard Academy server.")
-        }
         const executorId = await retry(async () => await noblox.getIdFromUsername(interaction.member.displayName));
         const executorRankIndex = await retry(async () => await getUserRankIndex(executorId));
         let UserPhase = ""
@@ -220,6 +287,7 @@ client.on(`interactionCreate`, async interaction => {
                 interaction.editReply(`You have been successfully given ${UserPhase} in the group.`)
 
             } catch(error){
+                errsend("Error in phase change", error)
                 console.log("Error while doing the promo/demo command",error)
                 interaction.editReply("An error has occured, let mohamed2enany know!")
             }
@@ -238,6 +306,7 @@ client.on(`interactionCreate`, async interaction => {
                 const auditLogData = await noblox.getAuditLog(groupId, "ChangeRank", 1552234858, "Desc", 10); // Wait for the promise to resolve
                 console.log(JSON.stringify(auditLogData)); // Now you can access the actual audit log data
             } catch (error) {
+                errsend("Error in audit logs: ", error)
                 console.error("Error fetching audit log:", error);
                 return interaction.editReply("bad job, error happen")
             }
@@ -248,18 +317,83 @@ client.on(`interactionCreate`, async interaction => {
     }
     if(interaction.commandName === `info`){
         try {
+        let result = Math.round(interaction.client.uptime / 60000)
+        let time = "minutes"
+        if (result >= 60){
+            result = result.toFixed(2)
+            time = "hours"
+        }
         const embed1 = new EmbedBuilder()
             .setTitle("Information")
-            .setDescription(`The bot was developed and made by <@!${ownerId}> \n\nCurrent Ping for the bot is: **${client.ws.ping}ms** (Can be inaccurate) \n\nUptime: **${Math.round(interaction.client.uptime / 60000)} minutes**`)
+            .setDescription(`
+                The bot was developed and made by <@!${ownerId}> 
+                \n\nCurrent Ping for the bot is: **${client.ws.ping}ms** (Can be inaccurate) \n\n
+                Uptime: **${result} ${time}**
+                `)
             .setColor("DarkBlue")
             await interaction.editReply({ embeds: [embed1] });
         } catch (err){
-            console.log(err)
+            errsend("Error in info: ",err)
+            console.error(err)
         }
     }
+    if(interaction.commandName === `suspend`){
 
+        try {
+            let userId, executorId;
+            const user = interaction.options.getUser('target');
+            const duration = interaction.options.getString('duration'); // e.g., "1d", "3h"
+            const reason = interaction.options.getString('reason')
+            const proof = interaction.options.getStringn('proof')
+            const member = interaction.guild.members.cache.get(user.id);
+            const unbanTime = Math.floor((Date.now() + parseDuration(duration)) / 1000);
+            
+            try {
+                executorId = await retry(async () => await noblox.getIdFromUsername(interaction.member.displayName));
+            } catch(err) {
+                return interaction.editReply(`❌ Your current server nickname does not match any Roblox user.`);
+            }
+            if (executorRankIndex < rankData.find(rank => rank.name === `[Deputy Director]`).rank) {
+                return interaction.editReply(`❌ You do not have permission to use this command.`);
+            }
+            await member.roles.add(1302266631329808384)
+            const embed = new EmbedBuilder()
+            .setTitle("New Suspension")
+            .setColor(11272192)
+            .setDescription(`A new suspension has been made!`)
+            .addFields[
+                {
+                  name: "Suspend",
+                  value: `<@!${member}>`,
+                  inline: true
+                },
+                {
+                    name: "Reason",
+                    value: `${reason}`,
+                    inline: true
+                  },
+                  {
+                    name: "Duration",
+                    value: `This suspension will last for ${makedurationbigger(duration)}`,
+                    inline: true
+                  },
+                  {
+                    name: "Issued by",
+                    value: `<@!${interaction.member.id}>`,
+                    inline: true
+                  },
+                  { name: '\u200b', value: '\u200b', inline:false},
+                  {
+                    name: "Expiration date",value: `<t:${unbanTime}:F> (<t:${unbanTime}:R>)`,"inline": true}
+            ]
+            await chnlsend(1332366775811051530, {embeds:embed})
+        } catch(err){
+            console.err(err)
+            errsend("Error in suspend: ",err)
+        }
+    }
 });
-const axios = require('axios');
+// const axios = require('axios');
 
 async function fetchExecutorFromAuditLog(targetId) {
     const currentTime = new Date(); // Current date and time
@@ -280,6 +414,7 @@ async function fetchExecutorFromAuditLog(targetId) {
         return executorsWithRoles
         } catch (error) {
         console.error("Error fetching audit log:", error);
+        errsend(error)
         return null;
         }
 }
@@ -312,12 +447,12 @@ async function monitorRankChanges() {
                     const executor = await fetchExecutorFromAuditLog(user.userId);
                     const currentTimestamp = Math.floor(Date.now() / 1000); // Convert milliseconds to seconds
                     const action = rankData.find(r => r.name === currentRank).rank > rankData.find(r => r.name === previousRank).rank ? 'Promotion' : 'Demotion';
-                    let exevalue = ""
-                    let exerole =  "";
+                    let exevalue,exerole;
                     try {
                     exevalue = executor[0].username
                     exerole = executor[0].role
                 } catch (error){
+                    errsend("Error in the values for promo embed: ",error)
                     console.log("Error in fetching executor name and role, ", error)
                     exevalue = "Unknown"
                     exerole = "Unknown"
@@ -330,6 +465,7 @@ async function monitorRankChanges() {
                             { name: 'User Executing', value: exevalue, inline: true },
                             { name: 'User\'s Rank', value: exerole, inline: true },
                             { name: 'Unit Affected', value: usernamevalue, inline: true },
+                            { name: '\u200b', value: '\u200b', inline:false},
                             { name: 'Old Rank', value: previousRank, inline: true },
                             { name: 'New Rank', value: currentRank, inline: true },
                             { name: 'Date', value: `<t:${currentTimestamp}:f>`, inline: true }
@@ -340,6 +476,8 @@ async function monitorRankChanges() {
             }
         }
     } catch (error) {
+        logChannel.send("An error has occured.")
+        errsend("Error in rank minotring: ",error)
         console.error('Error monitoring rank changes:', error);
     }
 }
