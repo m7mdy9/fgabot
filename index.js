@@ -71,7 +71,7 @@ function makedurationbigger(duration) {
     }
 }
 async function chnlsend(channel, message){
-    const logChannel = await client.channels.fetch(parseInt(channel));
+    const logChannel = await client.channels.fetch(channel);
     logChannel.send(message.toString())
 }
 async function errsend(message){
@@ -192,17 +192,17 @@ client.on(`interactionCreate`, async interaction => {
             
             try {
                 executorId = await retry(async () => await noblox.getIdFromUsername(interaction.member.displayName));
-            } catch(err) {
+            } catch(error) {
                 interaction.editReply(`❌ Your current server nickname does not match any Roblox user.`);
-                return errsend("Error came with the 'non matching username' : ",err)
+                return errsend("Error came with the 'non matching username' : ",error)
             }
             if (executorRankIndex < rankData.find(rank => rank.name === `[Instructor]`).rank) {
                 return interaction.editReply(`❌ You do not have permission to use this command.`);
             }
             try {
                 userId = await retry(async () => await noblox.getIdFromUsername(username));
-            } catch(err) {
-                errsennd("Error came with the none matchingn user to be ranked: ",err)
+            } catch(error) {
+                errsennd("Error came with the none matchingn user to be ranked: ",error)
                 return interaction.editReply(`❌ The username "${username}" was not found on Roblox.`);
             }
             const executorRankIndex = await retry(async () => await getUserRankIndex(executorId));
@@ -332,9 +332,9 @@ client.on(`interactionCreate`, async interaction => {
                 `)
             .setColor("DarkBlue")
             await interaction.editReply({ embeds: [embed1] });
-        } catch (err){
-            errsend("Error in info: ",err)
-            console.error(err)
+        } catch (error){
+            errsend("Error in info: ",error)
+            console.error(error)
         }
     }
     if(interaction.commandName === `suspend`){
@@ -351,7 +351,7 @@ client.on(`interactionCreate`, async interaction => {
             try {
                 executorId = await retry(async () => await noblox.getIdFromUsername(interaction.member.displayName));
                 executorRankIndex = await retry(async () => await getUserRankIndex(executorId));
-            } catch(err) {
+            } catch(error) {
                 return interaction.editReply(`❌ Your current server nickname does not match any Roblox user.`);
             }
             
@@ -391,9 +391,9 @@ client.on(`interactionCreate`, async interaction => {
                   ]
             await chnlsend("1332366775811051530", {embeds:embed})
             await interaction.editReply(`User <@!${user.id}> suspended successfully.`)
-        } catch(err){
-            console.error(err)
-            errsend("Error in suspend: ",err)
+        } catch(error){
+            console.error(error)
+            errsend("Error in suspend: ", error)
         }
     }
 });
