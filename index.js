@@ -144,7 +144,7 @@ async function registerSlashCommands(guildId) {
             )
             .addStringOption(option =>
                 option.setName(`proof`)
-                .setDescription(`You must here put a discord messsage link for the strike log message from it's corressponding channel`)
+                .setDescription(`Put the link to the corresponding strike log`)
                 .setRequired(true)
              )
     ];
