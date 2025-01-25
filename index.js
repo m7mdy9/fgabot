@@ -31,7 +31,9 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
-
+app.get('/favicon.ico', (req, res) => {
+  res.status(204); // No Content
+});
 // Retry function to handle timeouts or failed requests
 async function retry(fn, maxRetries = 3, delayMs = 2000) {
     let attempts = 0;
