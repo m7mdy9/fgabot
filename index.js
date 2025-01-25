@@ -557,5 +557,4 @@ client.once(`ready`, async () => {
 // });
 
 // Bot login
-logstuff("yoohoo the bot is working??")
 client.login(botToken);
