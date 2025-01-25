@@ -515,7 +515,34 @@ client.once(`ready`, async () => {
     await registerSlashCommands(guildId);
     setInterval(async () => { await monitorRankChanges() }, 1000);
 });
-
+async function chnlsend(channel, message){
+	try {
+    const logChannel = await client.channels.fetch(channel);
+    return await logChannel.send(message)
+	} catch(error){
+		console.error(error)
+	}
+}
+async function errsend(message){
+		try {
+    const logChannel = await client.channels.fetch(e_channel_Id);
+    return await logChannel.send(`Error:\n\`\`\`${message.toString()}\`\`\``)
+		} catch(error){
+		console.error(error)
+	}
+}
+async function noterrsend(message){
+    const logChannel = await client.channels.fetch(e_channel_Id);
+    return await logChannel.send(`\`\`\`${message.toString()}\`\`\``)
+}
+async function logstuff(message){
+	await noterrsend(message)
+	return await console.log(message)
+}
+async function logerror(message){
+	await errsend(message)
+	return await console.error(message)
+}
 
 // process.on('uncaughtException', (error) => {
 //     console.error('Uncaught Exception:', error);
@@ -538,24 +565,6 @@ client.once(`ready`, async () => {
 // });
 
 // Bot login
-client.login(botToken);
-async function chnlsend(channel, message){
-    const logChannel = await client.channels.fetch(channel);
-    return await logChannel.send(message)
-}
-async function errsend(message){
-    const logChannel = await client.channels.fetch(e_channel_Id);
-    return await logChannel.send(`Error:\n\`\`\`${message.toString()}\`\`\``)
-}
-async function noterrsend(message){
-    const logChannel = await client.channels.fetch(e_channel_Id);
-    return await logChannel.send(`\`\`\`${message.toString()}\`\`\``)
-}
-async function logstuff(message){
-	await noterrsend(message)
-	return await console.log(message)
-}
-async function logerror(message){
-	await errsend(message)
-	return await console.error(message)
-}
+client.login(botToken).catch((error) => {
+    console.error('Failed to login:', error);
+});
