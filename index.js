@@ -29,7 +29,7 @@ app.get('/', (req, res) => {
 
 // Start the Express server on the port
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  logstuff(`Server running on port ${port}`);
 });
 app.get('/favicon.ico', (req, res) => {
   res.status(204); // No Content
@@ -43,7 +43,7 @@ async function retry(fn, maxRetries = 3, delayMs = 2000) {
         try {
             return await fn();
         } catch (error) {
-            errsend(`${error.message}`)
+            logerror(`${error.message}`)
             lastError = error;
             attempts++;
             console.error(`Attempt ${attempts} failed. Retrying in ${delayMs / 1000} seconds...`);
@@ -101,7 +101,7 @@ async function noterrsend(message){
     const logChannel = await client.channels.fetch(e_channel_Id);
     return await logChannel.send(`\`\`\`${message.toString()}\`\`\``)
 }
-async function logstuff(message.toString()){
+async function logstuff(message){
 	await noterrsend(messsage)
 	return await console.log(message)
 }
@@ -183,14 +183,14 @@ async function registerSlashCommands(guildId) {
     const rest = new REST({ version: `10` }).setToken(botToken);
 
     try {
-        console.log(`Clearing old commands...`);
+        logstuff(`Clearing old commands...`);
         await retry(async () => {
             await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: [] });
             await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands });
         });
-        console.log(`✅ Slash commands registered successfully!`);
+        logstuff(`✅ Slash commands registered successfully!`);
     } catch (error) {
-        errsend(`${error.message}`)
+        logerror(`${error.message}`)
         console.error(`Error registering commands:`, error);
     }
 }
@@ -200,7 +200,7 @@ async function getUserRankIndex(userId) {
         const rank = await noblox.getRankInGroup(groupId, userId);
         return rank;
     } catch (error) {
-        errsend(`${error.message}`)
+        logerror(`${error.message}`)
         return -1;
     }
 }
@@ -225,7 +225,7 @@ client.on(`interactionCreate`, async interaction => {
                 executorId = await retry(async () => await noblox.getIdFromUsername(interaction.member.displayName));
             } catch(error) {
                 interaction.editReply(`❌ Your current server nickname does not match any Roblox user.`);
-                return errsend(`Error came with the non matching username: ${error.message}`)
+                return logerror(`Error came with the non matching username: ${error.message}`)
             }
             const executorRankIndex = await retry(async () => await getUserRankIndex(executorId));
             if (executorRankIndex < rankData.find(rank => rank.name === `[Instructor]`).rank) {
@@ -234,7 +234,7 @@ client.on(`interactionCreate`, async interaction => {
             try {
                 userId = await retry(async () => await noblox.getIdFromUsername(username));
             } catch(error) {
-                errsend(`Error came with the none matching user to be ranked: ${error.message}`)
+                logerror(`Error came with the none matching user to be ranked: ${error.message}`)
                 return interaction.editReply(`❌ The username "${username}" was not found on Roblox.`);
             }
             const targetRankIndex = await retry(async () => await getUserRankIndex(userId))
@@ -278,7 +278,7 @@ client.on(`interactionCreate`, async interaction => {
                 await logChannel.send(`\`The last rank change was made by ${interaction.member.displayName} to ${username} using the rank command.\``)
 
             } catch (error) {
-            errsend(`Error in rank change: ${error.message}`)
+            logerror(`Error in rank change: ${error.message}`)
             console.error(`Error handling rank change:`, error);
             await interaction.editReply(`❌ An error occurred while processing this command.`);
         }
@@ -318,13 +318,12 @@ client.on(`interactionCreate`, async interaction => {
                 interaction.editReply(`You have been successfully given ${UserPhase} in the group.`)
 
             } catch(error){
-                errsend(`Error in phase change: ${error.message}`)
-                console.log("Error while doing the promo/demo command",error)
+                logerror(`Error in phase change: ${error.message}`)
                 interaction.editReply("An error has occured, let mohamed2enany know!")
             }
     }
     if(interaction.commandName === `test`){
-        console.log(interaction.guild.id)
+        logstuff(interaction.guild.id)
         if (interaction.user.id != ownerId){
             return interaction.editReply(`Only <@!${ownerId}> can run this command.`);
         }
@@ -335,9 +334,9 @@ client.on(`interactionCreate`, async interaction => {
         async function getAuditLogData() {
             try {
                 const auditLogData = await noblox.getAuditLog(groupId, "ChangeRank", 1552234858, "Desc", 10); // Wait for the promise to resolve
-                console.log(JSON.stringify(auditLogData)); // Now you can access the actual audit log data
+                logstuff(JSON.stringify(auditLogData)); // Now you can access the actual audit log data
             } catch (error) {
-                errsend(`Error in audit logs: ${error.message}`)
+                logerror(`Error in audit logs: ${error.message}`)
                 console.error("Error fetching audit log:", error);
                 return interaction.editReply("bad job, error happen")
             }
@@ -365,7 +364,7 @@ client.on(`interactionCreate`, async interaction => {
             .setColor("DarkBlue")
             await interaction.editReply({ embeds: [embed1] });
         } catch (error){
-            errsend(`Error in info: ${error.message}`)
+            logerror(`Error in info: ${error.message}`)
             console.error(error)
         }
     }
@@ -432,7 +431,7 @@ client.on(`interactionCreate`, async interaction => {
             await interaction.editReply(`User <@!${user.id}> suspended successfully.`)
         } catch(error){
             console.error(error)
-            errsend(`Error in suspend: ${error.message}`)
+            logerror(`Error in suspend: ${error.message}`)
         }
     }
 });
@@ -457,7 +456,7 @@ async function fetchExecutorFromAuditLog(targetId) {
         return executorsWithRoles
         } catch (error) {
         console.error("Error fetching audit log:", error);
-        errsend(`Error in fetch Audit log: ${error.message}`)
+        logerror(`Error in fetch Audit log: ${error.message}`)
         return null;
         }
 }
@@ -495,8 +494,7 @@ async function monitorRankChanges() {
                     exevalue = executor[0].username
                     exerole = executor[0].role
                 } catch (error){
-                    errsend(`Error in the values for promo embed: ${error.message}`)
-                    console.log("Error in fetching executor name and role, ", error)
+                    logerror(`Error in the values for promo embed: ${error.message}`)
                     exevalue = "Unknown"
                     exerole = "Unknown"
                 }
@@ -521,7 +519,7 @@ async function monitorRankChanges() {
     } catch (error) {
         const logChannel = await client.channels.fetch(logChannelId);
 if (logChannel) logChannel.send("An error has occurred.");
-        errsend(`Error in rank minotring: ${error.message}`)
+        logerror(`Error in rank minotring: ${error.message}`)
         console.error('Error monitoring rank changes:', error);
     }
 }
@@ -531,7 +529,7 @@ if (logChannel) logChannel.send("An error has occurred.");
 // }
 
 client.once(`ready`, async () => {
-    console.log(`✅ Logged in as ${client.user.tag}`);
+    logstuff(`✅ Logged in as ${client.user.tag}`);
     await initialize();
     await registerSlashCommands(guildId);
     setInterval(async () => { await monitorRankChanges() }, 1000);
@@ -559,5 +557,5 @@ client.once(`ready`, async () => {
 // });
 
 // Bot login
-console.log("yoohoo the bot is working??")
+logstuff("yoohoo the bot is working??")
 client.login(botToken);
