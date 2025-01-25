@@ -315,7 +315,7 @@ client.on(`interactionCreate`, async interaction => {
         async function getAuditLogData() {
             try {
                 const auditLogData = await noblox.getAuditLog(groupId, "ChangeRank", 1552234858, "Desc", 10); // Wait for the promise to resolve
-                logstuff(JSON.stringify(auditLogData)); // Now you can access the actual audit log data
+                console.log(JSON.stringify(auditLogData)); //DO NOT CHANGE TO logstuff
             } catch (error) {
                 logerror(`Error in audit logs: ${error.message}`)
                 console.error("Error fetching audit log:", error);
@@ -533,8 +533,8 @@ async function errsend(message){
 }
 async function noterrsend(message){
 		try {
-    const logChannel = await client.channels.fetch(e_channel_Id);
-    return await logChannel.send(`\`\`\`${message.toString()}\`\`\``)
+    const asds = await client.channels.fetch(e_channel_Id);
+    return await asds.send(`\`\`\`${message.toString()}\`\`\``)
 	} catch(error){
 		console.error(error)
 	}
