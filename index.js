@@ -16,6 +16,22 @@ let rankData = [];
 let previousGroupRanks = {};
 let isFirstRun = true;
 
+const express = require('express');
+const app = express();
+
+// Use the port from the environment variable (Railway assigns this)
+const port = process.env.PORT || 3000;
+
+// Define a route to handle incoming requests
+app.get('/', (req, res) => {
+  res.send('Bot is alive!');
+});
+
+// Start the Express server on the port
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
+
 // Retry function to handle timeouts or failed requests
 async function retry(fn, maxRetries = 3, delayMs = 2000) {
     let attempts = 0;
