@@ -102,7 +102,7 @@ async function noterrsend(message){
     return await logChannel.send(`\`\`\`${message.toString()}\`\`\``)
 }
 async function logstuff(message){
-	await noterrsend(messsage)
+	await noterrsend(message)
 	return await console.log(message)
 }
 async function logerror(message){
