@@ -97,6 +97,18 @@ async function errsend(message){
     const logChannel = await client.channels.fetch(e_channel_Id);
     return await logChannel.send(`Error:\n\`\`\`${message.toString()}\`\`\``)
 }
+async function noterrsend(message){
+    const logChannel = await client.channels.fetch(e_channel_Id);
+    return await logChannel.send(`\`\`\`${message.toString()}\`\`\``)
+}
+async function logstuff(message.toString()){
+	await noterrsend(messsage)
+	return await console.log(message)
+}
+async function logerror(message){
+	await errsend(message)
+	return await console.error(message)
+}
 
 async function initialize() {
     await retry(async () => {
