@@ -11,7 +11,7 @@ const clientId = process.env.CLIENTID;
 const guildId = process.env.GUILDID;
 const ownerId = process.env.ownerId
 const e_channel_Id = "1332377984195235973";
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 let rankData = [];
 let previousGroupRanks = {};
 let isFirstRun = true;
@@ -527,13 +527,17 @@ async function errsend(message){
 		try {
     const logChannel = await client.channels.fetch(e_channel_Id);
     return await logChannel.send(`Error:\n\`\`\`${message.toString()}\`\`\``)
-		} catch(error){
+	} catch(error){
 		console.error(error)
 	}
 }
 async function noterrsend(message){
+		try {
     const logChannel = await client.channels.fetch(e_channel_Id);
     return await logChannel.send(`\`\`\`${message.toString()}\`\`\``)
+	} catch(error){
+		console.error(error)
+	}
 }
 async function logstuff(message){
 	await noterrsend(message)
