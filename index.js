@@ -75,19 +75,54 @@ function parseDuration(duration) {
 function makedurationbigger(duration) {
     const regex = /^(\d+)([dhm])$/; // Matches formats like "1d", "3h", "15m"
     const match = duration.match(regex);
-
+    
     if (!match) return null;
-
+    
     const value = parseInt(match[1], 10);
     const unit = match[2];
-
+    
     switch (unit) {
         case 'd': return value + " days" // Days to milliseconds
         case 'h': return value +  " hours"   // Hours to milliseconds
         case 'm': return value + " minutes"        // Minutes to milliseconds
         default: return null;
     }
-
+    
+}
+async function chnlsend(channel, message){
+    try {
+    const logChannel = await client.channels.fetch(channel);
+    return await logChannel.send(message)
+    } catch(error){
+        console.error(error)
+    }
+}
+async function errsend(message){
+        try {
+    const logChannel = await client.channels.fetch(e_channel_Id);
+    return await logChannel.send(`Error:\n\`\`\`${message.toString()}\`\`\``)
+    } catch(error){
+        console.error(error)
+    }
+}
+async function noterrsend(message){
+        try {
+    const asds = await client.channels.fetch(e_channel_Id);
+    return await asds.send(`\`\`\`${message.toString()}\`\`\``)
+    } catch(error){
+        console.error(error)
+    }
+}
+async function logstuff(message){
+    await noterrsend(message)
+    return console.log(message)
+}
+async function logerror(message){
+    if(message === "socket hang up"){
+        return console.error(message)
+    }
+    await errsend(message)
+    return console.error(message)
 }
 
 
@@ -515,38 +550,6 @@ client.once(`ready`, async () => {
     await registerSlashCommands(guildId);
     setInterval(async () => { await monitorRankChanges() }, 1000);
 });
-async function chnlsend(channel, message){
-	try {
-    const logChannel = await client.channels.fetch(channel);
-    return await logChannel.send(message)
-	} catch(error){
-		console.error(error)
-	}
-}
-async function errsend(message){
-		try {
-    const logChannel = await client.channels.fetch(e_channel_Id);
-    return await logChannel.send(`Error:\n\`\`\`${message.toString()}\`\`\``)
-	} catch(error){
-		console.error(error)
-	}
-}
-async function noterrsend(message){
-		try {
-    const asds = await client.channels.fetch(e_channel_Id);
-    return await asds.send(`\`\`\`${message.toString()}\`\`\``)
-	} catch(error){
-		console.error(error)
-	}
-}
-async function logstuff(message){
-	await noterrsend(message)
-	return await console.log(message)
-}
-async function logerror(message){
-	await errsend(message)
-	return await console.error(message)
-}
 
 // process.on('uncaughtException', (error) => {
 //     console.error('Uncaught Exception:', error);
