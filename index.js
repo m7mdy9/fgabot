@@ -1,8 +1,8 @@
-require('dotenv').config();
-const fs = require("fs")
-const path = require('path')
-const { Client, GatewayIntentBits, EmbedBuilder, REST, Routes, SlashCommandBuilder, SortOrderType, parseEmoji, Collection } = require('discord.js');
-const noblox = require('noblox.js');
+import 'dotenv/config';  // For loading .env variables in ES Modules
+import fs from 'fs';
+import path from 'path';
+import { Client, GatewayIntentBits, EmbedBuilder, REST, Routes, SlashCommandBuilder, SortOrderType, parseEmoji, Collection } from 'discord.js';
+import noblox from 'noblox.js';
 
 noblox.settings.timeout = 300000;
 const botToken = process.env.DISCORDTOKEN;
