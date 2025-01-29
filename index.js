@@ -18,7 +18,7 @@ let rankData = [];
 let previousGroupRanks = {};
 let isFirstRun = true;
 
-const express = require('express');
+import express from 'express';
 const app = express();
 
 // Use the port from the environment variable (Railway assigns this)
