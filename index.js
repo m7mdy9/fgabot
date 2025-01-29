@@ -34,8 +34,6 @@ app.listen(port, () => {
 app.get('/favicon.ico', (req, res) => {
   res.status(204); // No Content
 });
-javascript
-Copy
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'healthy', uptime: process.uptime() });
 });
