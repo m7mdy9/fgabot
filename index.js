@@ -638,10 +638,24 @@ Object.getOwnPropertyNames(module.exports).forEach(name => {
         exports[name] = module.exports[name];
     }
 });
-module.exports = { ...exports, SlashCommandBuilder, noblox, client, 
-    EmbedBuilder, groupId, logChannelId, clientId, 
-    guildId, ownerId, e_channel_Id, retry, 
-    parseDuration, makedurationbigger, chnlsend, 
-    errsend, noterrsend, logstuff, logerror,  
-    getUserRankIndex,   
-    fetchExecutorFromAuditLog, rankData}
+
+module.exports.retry = retry;
+module.exports.parseDuration = parseDuration;
+module.exports.makedurationbigger = makedurationbigger;
+module.exports.chnlsend = chnlsend;
+module.exports.errsend = errsend;
+module.exports.noterrsend = noterrsend;
+module.exports.logstuff = logstuff;
+module.exports.logerror = logerror;
+module.exports.getUserRankIndex = getUserRankIndex;
+module.exports.fetchExecutorFromAuditLog = fetchExecutorFromAuditLog;
+module.exports.SlashCommandBuilder = SlashCommandBuilder;
+module.exports.noblox = noblox;
+module.exports.client = client;
+module.exports.EmbedBuilder = EmbedBuilder;
+module.exports.groupId = groupId;
+module.exports.logChannelId = logChannelId;
+module.exports.clientId = clientId;
+module.exports.guildId = guildId;
+module.exports.ownerId = ownerId;
+module.exports.e_channel_Id = e_channel_Id;
