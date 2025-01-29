@@ -3,6 +3,14 @@ import fs from 'fs';
 import path from 'path';
 import { Client, GatewayIntentBits, EmbedBuilder, REST, Routes, SlashCommandBuilder, SortOrderType, parseEmoji, Collection } from 'discord.js';
 import noblox from 'noblox.js';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+// Get the full URL of the current module (using import.meta.url)
+const __filename = fileURLToPath(import.meta.url);
+
+// Get the directory name (equivalent of __dirname)
+const __dirname = dirname(__filename);
 
 noblox.settings.timeout = 300000;
 const botToken = process.env.DISCORDTOKEN;
