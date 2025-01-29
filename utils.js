@@ -2,7 +2,7 @@ require("dotenv").config()
 const noblox = require("noblox.js")
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js")
 const { getgroupid } = require("./index.js")
-const groupId = getgroupid();
+const groupId = getgroupid;
 
 async function getUserRankIndex(userId) {
     try {
