@@ -1,7 +1,5 @@
-const { getclient, getclientid, getlogchannelid, getownerid} = require("../index.js");
-const client = getclient();
-const logChannelId = getlogchannelid();
-const ownerId = getownerid();
+const { getclient } = require("../index.js");
+const client = getclient;
 const { retry, getUserRankIndex, noblox, parseDuration, makedurationbigger } = require("../utils.js")
 const { SlashCommandBuilder, EmbedBuilder} = require("discord.js")
 let rankData = [];

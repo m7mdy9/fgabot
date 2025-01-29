@@ -1,7 +1,7 @@
 const { getgroupid, getclient } = require("../index.js");
 const { getUserRankIndex, logerror, retry, noblox } = require("../utils.js")
-const client = getclient();
-const groupId = getgroupid();
+const client = getclient;
+const groupId = getgroupid;
 let rankData = [];
     retry(async () => {
         rankData = await noblox.getRoles(groupId);

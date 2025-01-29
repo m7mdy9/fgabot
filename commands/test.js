@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js")
 const { logstuff } = require("../utils.js")
 const { getownerid } = require("../index.js")
-const ownerId = getownerid();
+const ownerId = getownerid;
 module.exports = {
     data: new SlashCommandBuilder()
     .setName(`test`)

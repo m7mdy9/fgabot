@@ -1,6 +1,6 @@
 const { getclient, getownerid} = require("../index.js");
-const client = getclient();
-const ownerId = getownerid();
+const client = getclient;
+const ownerId = getownerid;
 const { SlashCommandBuilder, EmbedBuilder} = require("discord.js");
 const { logerror } = require("../utils.js");
 module.exports = {
