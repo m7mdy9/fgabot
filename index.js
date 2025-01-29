@@ -635,8 +635,7 @@ client.login(botToken).catch((error) => {
 });
 
 module.exports = {
-retry
-,parseDuration
+parseDuration
 ,makedurationbigger
 ,chnlsend
 ,errsend

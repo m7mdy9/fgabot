@@ -1,7 +1,25 @@
+async function retry(fn, maxRetries = 3, delayMs = 2000) {
+    let attempts = 0;
+    let lastError;
+
+    while (attempts < maxRetries) {
+        try {
+            return await fn();
+        } catch (error) {
+            lastError = error;
+            attempts++;
+            const waitTime = delayMs * Math.pow(2, attempts); // Exponential backoff
+            console.error(`Attempt ${attempts} failed. Retrying in ${waitTime / 1000} seconds...`);
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+        }
+    }
+
+    throw lastError; // Rethrow the last error after max retries
+}
 const { parseDuration, 
     makedurationbigger, client,  
     ownerId, logerror, groupId, getUserRankIndex, 
-    retry, noblox, chnlsend} = require("../index.js");
+     noblox, chnlsend} = require("../index.js");
     retry(async () => {
             rankData = await noblox.getRoles(groupId);
             
