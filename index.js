@@ -2,7 +2,7 @@ require('dotenv').config();
 const { Client, GatewayIntentBits, EmbedBuilder, REST, Routes, SlashCommandBuilder, SortOrderType, parseEmoji } = require('discord.js');
 const noblox = require('noblox.js');
 
-noblox.settings.timeout = 120000;
+noblox.settings.timeout = 300000;
 const botToken = process.env.DISCORDTOKEN;
 const ROBLOSECURITY = process.env.ROBLOXTOKEN;
 const groupId = parseInt(process.env.groupID);
@@ -34,26 +34,29 @@ app.listen(port, () => {
 app.get('/favicon.ico', (req, res) => {
   res.status(204); // No Content
 });
+javascript
+Copy
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'healthy', uptime: process.uptime() });
+});
 // Retry function to handle timeouts or failed requests
 async function retry(fn, maxRetries = 3, delayMs = 2000) {
     let attempts = 0;
     let lastError;
-    
+
     while (attempts < maxRetries) {
         try {
             return await fn();
         } catch (error) {
-            logerror(`${error.message}`)
             lastError = error;
             attempts++;
-            console.error(`Attempt ${attempts} failed. Retrying in ${delayMs / 1000} seconds...`);
-            await new Promise(resolve => setTimeout(resolve, delayMs));
+            const waitTime = delayMs * Math.pow(2, attempts); // Exponential backoff
+            console.error(`Attempt ${attempts} failed. Retrying in ${waitTime / 1000} seconds...`);
+            await new Promise(resolve => setTimeout(resolve, waitTime));
         }
     }
-    
-    // If we reach here, all attempts have failed
-    console.error(`Max retries reached. Last error:`, lastError);
-    throw lastError; // Rethrow the last error encountered
+
+    throw lastError; // Rethrow the last error after max retries
 }
 
 function parseDuration(duration) {
@@ -570,6 +573,9 @@ client.once(`ready`, async () => {
 // client.on('warn', (warning) => {
 //     console.warn('Discord Client Warning:', warning);
 // });
+client.on('rateLimit', (rateLimitInfo) => {
+    console.warn(`Rate limit hit:`, rateLimitInfo);
+});
 
 // Bot login
 client.login(botToken).catch((error) => {
