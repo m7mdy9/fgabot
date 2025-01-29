@@ -14,7 +14,6 @@ let rankData = [];
             }
             // console.log(rankData, previousGroupRanks);
         });
-const { SlashCommandBuilder, EmbedBuilder} = require("discord.js")
 
 module.exports = {
     data: new SlashCommandBuilder()
