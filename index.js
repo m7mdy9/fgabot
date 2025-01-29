@@ -367,9 +367,15 @@ client.on(`interactionCreate`, async interaction => {
         let result = Math.round(interaction.client.uptime / 60000)
         let time = "minutes"
         if (result >= 60){
-            var result1 = result / 60
-			result = result1.toFixed(2)
-            time = "hours"
+            let result1 = result / 60
+			result = result1.toFixed(1)
+            if (result >= 24){
+            result1 = result / 24
+            result = result1.toFixed(1)
+            time = "days"
+            } else {
+                    time = "hours"
+            }
         }
         const embed1 = new EmbedBuilder()
             .setTitle("Information")
