@@ -1,13 +1,15 @@
-import { SlashCommandBuilder, EmbedBuilder } from "discord.js"
-import { ownerId, logstuff } from "../index.js"
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js")
+const { ownerId, logstuff } = require("../index.js")
 
-export const data = new SlashCommandBuilder()
+module.exports = {
+    data: new SlashCommandBuilder()
     .setName(`test`)
-    .setDescription(`test`)
-export async function execute(interaction) {
-    logstuff(interaction.guild.id)
-    if (interraction.user.id != ownerId) {
-        return interaction.editReply(`Only <@!${ownerId}> can run this command.`)
+    .setDescription(`test`),
+    async execute(interaction){
+        logstuff(interaction.guild.id)
+        if (interraction.user.id != ownerId){
+            return interaction.editReply(`Only <@!${ownerId}> can run this command.`)
+        }
+        interaction.editReply(`good job`)
     }
-    interaction.editReply(`good job`)
 }

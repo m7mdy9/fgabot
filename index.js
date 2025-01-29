@@ -1,16 +1,8 @@
-import 'dotenv/config';  // For loading .env variables in ES Modules
-import fs from 'fs';
-import path from 'path';
-import { Client, GatewayIntentBits, EmbedBuilder, REST, Routes, SlashCommandBuilder, SortOrderType, parseEmoji, Collection } from 'discord.js';
-import noblox from 'noblox.js';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
-// Get the full URL of the current module (using import.meta.url)
-const __filename = fileURLToPath(import.meta.url);
-
-// Get the directory name (equivalent of __dirname)
-const __dirname = dirname(__filename);
+require('dotenv').config();
+const fs = require("fs")
+const path = require('path')
+const { Client, GatewayIntentBits, EmbedBuilder, REST, Routes, SlashCommandBuilder, SortOrderType, parseEmoji, Collection } = require('discord.js');
+const noblox = require('noblox.js');
 
 noblox.settings.timeout = 300000;
 const botToken = process.env.DISCORDTOKEN;
@@ -26,7 +18,7 @@ let rankData = [];
 let previousGroupRanks = {};
 let isFirstRun = true;
 
-import express from 'express';
+const express = require('express');
 const app = express();
 
 // Use the port from the environment variable (Railway assigns this)
@@ -48,7 +40,7 @@ app.get('/health', (req, res) => {
     res.status(200).json({ status: 'healthy', uptime: process.uptime() });
 });
 // Retry function to handle timeouts or failed requests
-export async function retry(fn, maxRetries = 3, delayMs = 2000) {
+async function retry(fn, maxRetries = 3, delayMs = 2000) {
     let attempts = 0;
     let lastError;
 
@@ -67,7 +59,7 @@ export async function retry(fn, maxRetries = 3, delayMs = 2000) {
     throw lastError; // Rethrow the last error after max retries
 }
 
-export function parseDuration(duration) {
+function parseDuration(duration) {
     const regex = /^(\d+)([dhm])$/; // Matches formats like "1d", "3h", "15m"
     const match = duration.match(regex);
 
@@ -83,7 +75,7 @@ export function parseDuration(duration) {
         default: return null;
     }
 }
-export function makedurationbigger(duration) {
+function makedurationbigger(duration) {
     const regex = /^(\d+)([dhm])$/; // Matches formats like "1d", "3h", "15m"
     const match = duration.match(regex);
     
@@ -100,7 +92,7 @@ export function makedurationbigger(duration) {
     }
     
 }
-export async function chnlsend(channel, message){
+async function chnlsend(channel, message){
     try {
     const logChannel = await client.channels.fetch(channel);
     return await logChannel.send(message)
@@ -108,7 +100,7 @@ export async function chnlsend(channel, message){
         console.error(error)
     }
 }
-export async function errsend(message){
+async function errsend(message){
         try {
     const logChannel = await client.channels.fetch(e_channel_Id);
     return await logChannel.send(`Error:\n\`\`\`${message.toString()}\`\`\``)
@@ -116,7 +108,7 @@ export async function errsend(message){
         console.error(error)
     }
 }
-export async function noterrsend(message){
+async function noterrsend(message){
         try {
     const asds = await client.channels.fetch(e_channel_Id);
     return await asds.send(`\`\`\`${message.toString()}\`\`\``)
@@ -124,11 +116,11 @@ export async function noterrsend(message){
         console.error(error)
     }
 }
-export async function logstuff(message){
+async function logstuff(message){
     await noterrsend(message)
     return console.log(message)
 }
-export async function logerror(message, error){
+async function logerror(message, error){
     if(message === "socket hang up"){
         return console.error(error)
     }
@@ -137,7 +129,7 @@ export async function logerror(message, error){
 }
 
 
-export async function initialize() {
+async function initialize() {
     await retry(async () => {
         await noblox.setCookie(ROBLOSECURITY);
         rankData = await noblox.getRoles(groupId);
@@ -248,7 +240,7 @@ async function deploySlashCommands() {
 //         console.error(`Error registering commands:`, error);
 //     }
 // }
-export async function getUserRankIndex(userId) {
+async function getUserRankIndex(userId) {
     try {
         const rank = await noblox.getRankInGroup(groupId, userId);
         return rank;
@@ -516,7 +508,7 @@ client.on('interactionCreate', async interaction => {
 //     }
 // });
 // const axios = require('axios');
-export async function fetchExecutorFromAuditLog(targetId) {
+async function fetchExecutorFromAuditLog(targetId) {
     const currentTime = new Date(); // Current date and time
     const adjustedCurrentTime = new Date(currentTime.getTime() - 2 * 60 * 60 * 1000);
     const twentyMinutesAgo = new Date(adjustedCurrentTime - 20 * 60 * 1000); // 20 minutes ago
@@ -642,16 +634,16 @@ client.login(botToken).catch((error) => {
     console.error('Failed to login:', error);
 });
 
-// module.exports.retry = retry;
-// module.exports.parseDuration = parseDuration;
-// module.exports.makedurationbigger = makedurationbigger;
-// module.exports.chnlsend = chnlsend;
-// module.exports.errsend = errsend;
-// module.exports.noterrsend = noterrsend;
-// module.exports.logstuff = logstuff;
-// module.exports.logerror = logerror;
-// module.exports.getUserRankIndex = getUserRankIndex;
-// module.exports.fetchExecutorFromAuditLog = fetchExecutorFromAuditLog;
+module.exports.retry = retry;
+module.exports.parseDuration = parseDuration;
+module.exports.makedurationbigger = makedurationbigger;
+module.exports.chnlsend = chnlsend;
+module.exports.errsend = errsend;
+module.exports.noterrsend = noterrsend;
+module.exports.logstuff = logstuff;
+module.exports.logerror = logerror;
+module.exports.getUserRankIndex = getUserRankIndex;
+module.exports.fetchExecutorFromAuditLog = fetchExecutorFromAuditLog;
 module.exports.SlashCommandBuilder = SlashCommandBuilder;
 module.exports.noblox = noblox;
 module.exports.client = client;
