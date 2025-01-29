@@ -1,25 +1,9 @@
-async function retry(fn, maxRetries = 3, delayMs = 2000) {
-    let attempts = 0;
-    let lastError;
 
-    while (attempts < maxRetries) {
-        try {
-            return await fn();
-        } catch (error) {
-            lastError = error;
-            attempts++;
-            const waitTime = delayMs * Math.pow(2, attempts); // Exponential backoff
-            console.error(`Attempt ${attempts} failed. Retrying in ${waitTime / 1000} seconds...`);
-            await new Promise(resolve => setTimeout(resolve, waitTime));
-        }
-    }
-
-    throw lastError; // Rethrow the last error after max retries
-}
-const { parseDuration, 
-    makedurationbigger, client,  
-    ownerId, logerror, groupId, getUserRankIndex, 
-     noblox} = require("../index.js");
+const { getclient, getclientid, getlogchannelid, getownerid} = require("../index.js");
+const client = getclient();
+const logChannelId = getlogchannelid();
+const ownerId = getownerid();
+const { retry, getUserRankIndex, noblox, parseDuration, makedurationbigger } = require("../utils.js")
 const { SlashCommandBuilder, EmbedBuilder} = require("discord.js")
 let rankData = [];
 retry(async () => {
@@ -64,7 +48,7 @@ module.exports = {
                         executorId = await retry(async () => await noblox.getIdFromUsername(interaction.member.displayName));
                     } catch(error) {
                         interaction.editReply(`❌ Your current server nickname does not match any Roblox user.`);
-                        return logerror(`Error came with the non matching username: `, error)
+                        return logerror(client,`Error came with the non matching username: `, error)
                     }
                     const executorRankIndex = await retry(async () => await getUserRankIndex(executorId));
                     if (executorRankIndex < rankData.find(rank => rank.name === `[Instructor]`).rank) {
@@ -73,7 +57,7 @@ module.exports = {
                     try {
                         userId = await retry(async () => await noblox.getIdFromUsername(username));
                     } catch(error) {
-                        logerror(`Error came with the none matching user to be ranked: `, error)
+                        logerror(client,`Error came with the none matching user to be ranked: `, error)
                         return interaction.editReply(`❌ The username "${username}" was not found on Roblox.`);
                     }
                     const targetRankIndex = await retry(async () => await getUserRankIndex(userId))
@@ -117,7 +101,7 @@ module.exports = {
                         await logChannel.send(`\`The last rank change was made by ${interaction.member.displayName} to ${username} using the rank command.\``)
         
                     } catch (error) {
-                    logerror(`Error in rank change: `, error)
+                    logerror(client,`Error in rank change: `, error)
                     console.error(`Error handling rank change:`, error);
                     await interaction.editReply(`❌ An error occurred while processing this command.`);
                 }

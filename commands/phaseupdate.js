@@ -1,23 +1,8 @@
-async function retry(fn, maxRetries = 3, delayMs = 2000) {
-    let attempts = 0;
-    let lastError;
-
-    while (attempts < maxRetries) {
-        try {
-            return await fn();
-        } catch (error) {
-            lastError = error;
-            attempts++;
-            const waitTime = delayMs * Math.pow(2, attempts); // Exponential backoff
-            console.error(`Attempt ${attempts} failed. Retrying in ${waitTime / 1000} seconds...`);
-            await new Promise(resolve => setTimeout(resolve, waitTime));
-        }
-    }
-
-    throw lastError; // Rethrow the last error after max retries
-}
-const { logerror, groupId, getUserRankIndex, noblox} = require("../index.js");
-
+const { getgroupid, getclient } = require("../index.js");
+const { getUserRankIndex, logerror, retry, noblox } = require("../utils.js")
+const client = getclient();
+const groupId = getgroupid();
+let rankData = [];
     retry(async () => {
         rankData = await noblox.getRoles(groupId);
         
@@ -69,7 +54,7 @@ module.exports = {
                 interaction.editReply(`You have been successfully given ${UserPhase} in the group.`)
 
             } catch(error){
-                logerror(`Error in phase change: `, error)
+                logerror(client, `Error in phase change: `, error)
                 interaction.editReply("An error has occured, let mohamed2enany know!")
             }
     }

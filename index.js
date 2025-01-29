@@ -19,11 +19,11 @@ let previousGroupRanks = {};
 let isFirstRun = true;
 
 const express = require('express');
+const { group } = require('console');
 const app = express();
 
 // Use the port from the environment variable (Railway assigns this)
 const port = process.env.PORT || 3000;
-
 // Define a route to handle incoming requests
 app.get('/', (req, res) => {
   res.send('Bot is alive!');
@@ -633,24 +633,29 @@ client.on('rateLimit', (rateLimitInfo) => {
 client.login(botToken).catch((error) => {
     console.error('Failed to login:', error);
 });
-
+function getclient(){
+    return client
+}
+function getgroupid(){
+    return groupId
+}
+function getlogchannelid(){
+    return logChannelId
+}
+function getclientid(){
+    return clientId
+}
+function getguildid(){
+    return guildId
+}
+function getownerid(){
+    return ownerId
+}
 module.exports = {
-parseDuration
-,makedurationbigger
-,chnlsend
-,errsend
-,noterrsend
-,logstuff
-,logerror
-,getUserRankIndex
-,fetchExecutorFromAuditLog
-,SlashCommandBuilder
-,noblox
-,client
-,EmbedBuilder
-,groupId
-,logChannelId
-,clientId
-,guildId
-,ownerId
+getclient
+,getgroupid
+,getlogchannelid
+,getclientid
+,getguildid
+,getownerid
 }

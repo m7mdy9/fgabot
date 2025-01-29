@@ -1,25 +1,10 @@
-async function retry(fn, maxRetries = 3, delayMs = 2000) {
-    let attempts = 0;
-    let lastError;
-
-    while (attempts < maxRetries) {
-        try {
-            return await fn();
-        } catch (error) {
-            lastError = error;
-            attempts++;
-            const waitTime = delayMs * Math.pow(2, attempts); // Exponential backoff
-            console.error(`Attempt ${attempts} failed. Retrying in ${waitTime / 1000} seconds...`);
-            await new Promise(resolve => setTimeout(resolve, waitTime));
-        }
-    }
-
-    throw lastError; // Rethrow the last error after max retries
-}
-const { parseDuration, 
-    makedurationbigger, client,  
-    ownerId, logerror, groupId, getUserRankIndex, 
-     noblox, chnlsend} = require("../index.js");
+const { getclient, getclientid, getlogchannelid, getownerid} = require("../index.js");
+const client = getclient();
+const logChannelId = getlogchannelid();
+const ownerId = getownerid();
+const { retry, getUserRankIndex, noblox, parseDuration, makedurationbigger } = require("../utils.js")
+const { SlashCommandBuilder, EmbedBuilder} = require("discord.js")
+let rankData = [];
     retry(async () => {
             rankData = await noblox.getRoles(groupId);
             
@@ -104,7 +89,8 @@ module.exports = {
                     name: "Issued by",
                     value: `<@!${interaction.member.id}>`,
                     inline: true
-                    },
+                },
+                {name: "Proof",value: proof,inline: true},
                     {
                     name: "Expiration date",value: `<t:${unbanTime}:F> (<t:${unbanTime}:R>)`,inline: true}
                     ]);
@@ -119,7 +105,7 @@ module.exports = {
             await interaction.editReply(`User <@!${user.id}> suspended successfully.`)
         } catch(error){
             console.error(error)
-            logerror(`Error in suspend: `, error)
+            logerror(client,`Error in suspend: `, error)
         }
      }
 }

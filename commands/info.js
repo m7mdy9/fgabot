@@ -1,7 +1,8 @@
-const { parseDuration, 
-    makedurationbigger, client,  
-    ownerId, logerror} = require("../index.js");
-const { SlashCommandBuilder, EmbedBuilder} = require("discord.js")
+const { getclient, getownerid} = require("../index.js");
+const client = getclient();
+const ownerId = getownerid();
+const { SlashCommandBuilder, EmbedBuilder} = require("discord.js");
+const { logerror } = require("../utils.js");
 module.exports = {
     data:  new SlashCommandBuilder()
         .setName(`info`)
@@ -31,7 +32,7 @@ module.exports = {
                         .setColor("DarkBlue")
                         await interaction.editReply({ embeds: [embed1] });
                     } catch (error){
-                        logerror(`Error in info: `, error)
+                        logerror(client, `Error in info: `, error)
                     }
         }
 }
