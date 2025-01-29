@@ -644,4 +644,4 @@ module.exports = { ...exports, SlashCommandBuilder, noblox, client,
     parseDuration, makedurationbigger, chnlsend, 
     errsend, noterrsend, logstuff, logerror,  
     getUserRankIndex,   
-    fetchExecutorFromAuditLog, rankData }
+    fetchExecutorFromAuditLog, rankData}

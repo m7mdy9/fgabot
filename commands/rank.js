@@ -1,8 +1,20 @@
 const { parseDuration, 
     makedurationbigger, client,  
     ownerId, logerror, groupId, getUserRankIndex, 
-    retry, noblox, rankData} = require("../index.js");
+    retry, noblox} = require("../index.js");
 const { SlashCommandBuilder, EmbedBuilder} = require("discord.js")
+let rankData = [];
+    await retry(async () => {
+        rankData = await noblox.getRoles(groupId);
+        
+        for (const rank of rankData) {
+            const users = await noblox.getPlayers(groupId, rank.id);
+            for (const user of users) {
+                previousGroupRanks[user.userId] = rank.name;
+            }
+        }
+        // console.log(rankData, previousGroupRanks);
+    });
 const rankData1 = rankData.slice(1, 11);
 const rankChoices = rankData1.map(rank => ({ name: rank.name, value: rank.name }));
 
