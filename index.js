@@ -40,7 +40,7 @@ app.get('/health', (req, res) => {
     res.status(200).json({ status: 'healthy', uptime: process.uptime() });
 });
 // Retry function to handle timeouts or failed requests
-async function retry(fn, maxRetries = 3, delayMs = 2000) {
+export async function retry(fn, maxRetries = 3, delayMs = 2000) {
     let attempts = 0;
     let lastError;
 
@@ -59,7 +59,7 @@ async function retry(fn, maxRetries = 3, delayMs = 2000) {
     throw lastError; // Rethrow the last error after max retries
 }
 
-function parseDuration(duration) {
+export function parseDuration(duration) {
     const regex = /^(\d+)([dhm])$/; // Matches formats like "1d", "3h", "15m"
     const match = duration.match(regex);
 
@@ -75,7 +75,7 @@ function parseDuration(duration) {
         default: return null;
     }
 }
-function makedurationbigger(duration) {
+export function makedurationbigger(duration) {
     const regex = /^(\d+)([dhm])$/; // Matches formats like "1d", "3h", "15m"
     const match = duration.match(regex);
     
@@ -92,7 +92,7 @@ function makedurationbigger(duration) {
     }
     
 }
-async function chnlsend(channel, message){
+export async function chnlsend(channel, message){
     try {
     const logChannel = await client.channels.fetch(channel);
     return await logChannel.send(message)
@@ -100,7 +100,7 @@ async function chnlsend(channel, message){
         console.error(error)
     }
 }
-async function errsend(message){
+export async function errsend(message){
         try {
     const logChannel = await client.channels.fetch(e_channel_Id);
     return await logChannel.send(`Error:\n\`\`\`${message.toString()}\`\`\``)
@@ -108,7 +108,7 @@ async function errsend(message){
         console.error(error)
     }
 }
-async function noterrsend(message){
+export async function noterrsend(message){
         try {
     const asds = await client.channels.fetch(e_channel_Id);
     return await asds.send(`\`\`\`${message.toString()}\`\`\``)
@@ -116,11 +116,11 @@ async function noterrsend(message){
         console.error(error)
     }
 }
-async function logstuff(message){
+export async function logstuff(message){
     await noterrsend(message)
     return console.log(message)
 }
-async function logerror(message, error){
+export async function logerror(message, error){
     if(message === "socket hang up"){
         return console.error(error)
     }
@@ -129,7 +129,7 @@ async function logerror(message, error){
 }
 
 
-async function initialize() {
+export async function initialize() {
     await retry(async () => {
         await noblox.setCookie(ROBLOSECURITY);
         rankData = await noblox.getRoles(groupId);
@@ -240,7 +240,7 @@ async function deploySlashCommands() {
 //         console.error(`Error registering commands:`, error);
 //     }
 // }
-async function getUserRankIndex(userId) {
+export async function getUserRankIndex(userId) {
     try {
         const rank = await noblox.getRankInGroup(groupId, userId);
         return rank;
@@ -508,7 +508,7 @@ client.on('interactionCreate', async interaction => {
 //     }
 // });
 // const axios = require('axios');
-async function fetchExecutorFromAuditLog(targetId) {
+export async function fetchExecutorFromAuditLog(targetId) {
     const currentTime = new Date(); // Current date and time
     const adjustedCurrentTime = new Date(currentTime.getTime() - 2 * 60 * 60 * 1000);
     const twentyMinutesAgo = new Date(adjustedCurrentTime - 20 * 60 * 1000); // 20 minutes ago
@@ -633,22 +633,17 @@ client.on('rateLimit', (rateLimitInfo) => {
 client.login(botToken).catch((error) => {
     console.error('Failed to login:', error);
 });
-Object.getOwnPropertyNames(module.exports).forEach(name => {
-    if (typeof module.exports[name] === 'function') {
-        exports[name] = module.exports[name];
-    }
-});
 
-module.exports.retry = retry;
-module.exports.parseDuration = parseDuration;
-module.exports.makedurationbigger = makedurationbigger;
-module.exports.chnlsend = chnlsend;
-module.exports.errsend = errsend;
-module.exports.noterrsend = noterrsend;
-module.exports.logstuff = logstuff;
-module.exports.logerror = logerror;
-module.exports.getUserRankIndex = getUserRankIndex;
-module.exports.fetchExecutorFromAuditLog = fetchExecutorFromAuditLog;
+// module.exports.retry = retry;
+// module.exports.parseDuration = parseDuration;
+// module.exports.makedurationbigger = makedurationbigger;
+// module.exports.chnlsend = chnlsend;
+// module.exports.errsend = errsend;
+// module.exports.noterrsend = noterrsend;
+// module.exports.logstuff = logstuff;
+// module.exports.logerror = logerror;
+// module.exports.getUserRankIndex = getUserRankIndex;
+// module.exports.fetchExecutorFromAuditLog = fetchExecutorFromAuditLog;
 module.exports.SlashCommandBuilder = SlashCommandBuilder;
 module.exports.noblox = noblox;
 module.exports.client = client;
