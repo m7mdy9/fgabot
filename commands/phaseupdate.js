@@ -1,7 +1,5 @@
-const { parseDuration, 
-    makedurationbigger, client,  
-    ownerId, logerror, groupId, getUserRankIndex, 
-    retry, noblox} = require("../index.js");
+const { logerror, groupId, getUserRankIndex, retry, noblox} = require("../index.js");
+
     retry(async () => {
         rankData = await noblox.getRoles(groupId);
         

@@ -1,7 +1,7 @@
 const { parseDuration, 
     makedurationbigger, client,  
     ownerId, logerror, groupId, getUserRankIndex, 
-    retry, noblox} = require("../index");
+    retry, noblox} = require("../index.js");
 const { SlashCommandBuilder, EmbedBuilder} = require("discord.js")
 let rankData = [];
 
