@@ -1,6 +1,8 @@
 const { getclient } = require("../index.js");
 const { retry, getUserRankIndex, noblox, parseDuration, makedurationbigger } = require("../utils.js")
 const { SlashCommandBuilder, EmbedBuilder} = require("discord.js")
+require('dotenv').config({ path: '../.env' })
+const groupId = process.env.groupID
 let rankData = [];
 retry(async () => {
     rankData = await noblox.getRoles(groupId);
@@ -40,7 +42,6 @@ module.exports = {
     ),
     async execute(interaction){
         try {
-            const client = getclient || "";
             let executorRankIndex, executorId;
             const user = interaction.options.getUser('target');
             const duration = interaction.options.getString('duration'); // e.g., "1d", "3h"

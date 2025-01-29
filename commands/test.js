@@ -1,13 +1,14 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js")
 const { logstuff } = require("../utils.js")
-const { getownerid, getclient } = require("../index.js")
+const { getclient } = require("../index.js")
+require('dotenv').config({ path: '../.env' })
+const ownerId = process.env.ownerId
+const client = getclient;
 module.exports = {
     data: new SlashCommandBuilder()
     .setName(`test`)
     .setDescription(`test`),
     async execute(interaction){
-        const ownerId = getownerid || "";
-        const client = getclient || "";
         logstuff(client, interaction.guild.id)
         if (interaction.user.id != ownerId){
             return interaction.editReply(`Only <@!${ownerId}> can run this command.`)

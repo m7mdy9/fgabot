@@ -1,7 +1,8 @@
-const { getclient, getownerid} = require("../index.js");
-
+const { getclient} = require("../index.js");
+require('dotenv').config({ path: '../.env' })
 const { SlashCommandBuilder, EmbedBuilder} = require("discord.js");
 const { logerror } = require("../utils.js");
+const ownerId = process.env.ownerId
 module.exports = {
     data:  new SlashCommandBuilder()
         .setName(`info`)
@@ -21,7 +22,6 @@ module.exports = {
                                 time = "hours"
                         }
                     }
-                    const ownerId = getownerid || "";
                     const embed1 = new EmbedBuilder()
                         .setTitle("Information")
                         .setDescription(`

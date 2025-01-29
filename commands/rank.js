@@ -1,7 +1,12 @@
 
-const { getclient, getclientid, getlogchannelid, getownerid} = require("../index.js");
+const { getclient, getlogchannelid} = require("../index.js");
 const { retry, getUserRankIndex, noblox, parseDuration, makedurationbigger } = require("../utils.js")
 const { SlashCommandBuilder, EmbedBuilder} = require("discord.js")
+require('dotenv').config({ path: '../.env' })
+const client = getclient;
+const logChannelId = getlogchannelid;
+const groupId = process.env.groupID
+
 let rankData = [];
 retry(async () => {
     rankData = await noblox.getRoles(groupId);
@@ -34,8 +39,6 @@ retry(async () => {
     )
     .toJSON(),
     async execute(interaction){
-        const client = getclient || "";
-        const logChannelId = getlogchannelid || "";
         const ownerId = getownerid || "";
         const username = interaction.options.getString(`username`);
         const rankName = interaction.options.getString(`rank`);

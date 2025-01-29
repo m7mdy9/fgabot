@@ -3,6 +3,7 @@ const fs = require("fs")
 const path = require('path')
 const { Client, GatewayIntentBits, EmbedBuilder, REST, Routes, SlashCommandBuilder, SortOrderType, parseEmoji, Collection } = require('discord.js');
 const noblox = require('noblox.js');
+const { deploySlashCommands } = require('./commandHandler.js'); // Import the deploy function
 
 noblox.settings.timeout = 300000;
 const botToken = process.env.DISCORDTOKEN;
@@ -19,7 +20,6 @@ let previousGroupRanks = {};
 let isFirstRun = true;
 
 const express = require('express');
-const { group } = require('console');
 const app = express();
 
 // Use the port from the environment variable (Railway assigns this)
@@ -144,102 +144,6 @@ async function initialize() {
         // console.log(rankData, previousGroupRanks);
     });
 }
-const commandsPath = path.join(__dirname, 'commands');
-
-// Load all command files from the 'commands' folder
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-const commands = [];
-
-// Dynamically import each command from the 'commands' folder
-for (const file of commandFiles) {
-    const command = require(path.join(commandsPath, file));
-    commands.push(command);
-}
-
-// Deploy slash commands to Discord
-async function deploySlashCommands() {
-    const rest = new REST({ version: '10' }).setToken(botToken);
-
-    try {
-        logstuff('Clearing old commands...');
-        await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: [] });
-
-        logstuff('Deploying new commands...');
-        await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands });
-
-        logstuff('✅ Slash commands deployed successfully!');
-    } catch (error) {
-        logerror('Error deploying commands:', error);
-    }
-}
-// async function registerSlashCommands(guildId) {
-    // const rankData1 = rankData.slice(1, 11);
-    // const rankChoices = rankData1.map(rank => ({ name: rank.name, value: rank.name }));
-
-//     const commands = [
-//         new SlashCommandBuilder()
-            // .setName(`rank`)
-            // .setDescription(`Promote or demote a user in the Roblox group.`)
-            // .addStringOption(option =>
-            //     option.setName(`username`)
-            //         .setDescription(`The Roblox username of the member.`)
-            //         .setRequired(true)
-            // )
-            // .addStringOption(option =>
-            //     option.setName(`rank`)
-            //         .setDescription(`Select the rank.`)
-            //         .setRequired(true)
-            //         .addChoices(...rankChoices)
-            // )
-            // .toJSON(),
-//         new SlashCommandBuilder()
-//             .setName(`phaseupdate`)
-//             .setDescription(`Sync your current group roles with current roles`),
-//         new SlashCommandBuilder()
-//             .setName(`test`)
-//             .setDescription(`test`),
-//             new SlashCommandBuilder()
-//             .setName(`info`)
-//             .setDescription(`Information`),
-//         new SlashCommandBuilder()
-            // .setName(`suspend`)
-            // .setDescription(`Used to suspend Fedearl Guard Academy members by Deputy Director or higher.`)
-            // .addUserOption(option =>
-            //     option.setName(`target`)
-            //     .setDescription(`User to be suspended`)
-            //     .setRequired(true)
-            // )
-            // .addStringOption(option =>
-            //     option.setName('duration')
-            //     .setDescription('Duration of the ban (e.g., 1d, 3h, 15m !MUST BE LIKE THAT!)')
-            //     .setRequired(true)
-            // )
-            // .addStringOption(option =>
-            //     option.setName("reason")
-            //     .setDescription("Reason for the suspension")
-            //     .setRequired(true)
-            // )
-            // .addStringOption(option =>
-            //     option.setName(`proof`)
-            //     .setDescription(`Put the link to the corresponding strike log`)
-            //     .setRequired(true)
-            //  )
-//     ];
-
-//     const rest = new REST({ version: `10` }).setToken(botToken);
-
-//     try {
-//         logstuff(`Clearing old commands...`);
-//         await retry(async () => {
-//             await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: [] });
-//             await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands });
-//         });
-//         logstuff(`✅ Slash commands registered successfully!`);
-//     } catch (error) {
-//         logerror(`${error.message}`)
-//         console.error(`Error registering commands:`, error);
-//     }
-// }
 async function getUserRankIndex(userId) {
     try {
         const rank = await noblox.getRankInGroup(groupId, userId);
@@ -271,243 +175,6 @@ client.on('interactionCreate', async interaction => {
         console.error(error);
     }
 });
-
-// client.on(`interactionCreate`, async interaction => {
-//     if (!interaction.isCommand()) return;
-
-//     await interaction.deferReply();
-//     if (interaction.guild.id != guildId && interaction.user.id != ownerId){
-//         return interaction.editReply("The bot only works in the Federal Guard Academy server.")
-//     }
-
-//     if (interaction.commandName === `rank`) {
-//         const username = interaction.options.getString(`username`);
-//         const rankName = interaction.options.getString(`rank`);
-//         try {
-            
-//             let userId, executorId;
-            
-            
-//             try {
-//                 executorId = await retry(async () => await noblox.getIdFromUsername(interaction.member.displayName));
-//             } catch(error) {
-//                 interaction.editReply(`❌ Your current server nickname does not match any Roblox user.`);
-//                 return logerror(`Error came with the non matching username: ${error.message}`)
-//             }
-//             const executorRankIndex = await retry(async () => await getUserRankIndex(executorId));
-//             if (executorRankIndex < rankData.find(rank => rank.name === `[Instructor]`).rank) {
-//                 return interaction.editReply(`❌ You do not have permission to use this command.`);
-//             }
-//             try {
-//                 userId = await retry(async () => await noblox.getIdFromUsername(username));
-//             } catch(error) {
-//                 logerror(`Error came with the none matching user to be ranked: ${error.message}`)
-//                 return interaction.editReply(`❌ The username "${username}" was not found on Roblox.`);
-//             }
-//             const targetRankIndex = await retry(async () => await getUserRankIndex(userId))
-//             var Action = targetRankIndex < rankData.find(rank => rank.name === rankName).rank;
-//             let RankType = "";
-            
-//             if (targetRankIndex <= 0){
-//                 return interaction.editReply(`❌ **${username}** was not found in the group.`)
-//             }
-//             if (targetRankIndex >= executorRankIndex && interaction.user.id != ownerId) {
-//                 return interaction.editReply(`❌ You cannot promote or demote someone with a rank equal to or higher than yours.`);
-//             }
-//             if (rankName === `[Federal Deputy Commander]` || rankData.find(r => r.name === rankName).rank >= rankData.find(r => r.name === `[Federal Deputy Commander]`).rank) {
-//                 return interaction.editReply(`❌ The bot cannot perform rank changes for or above **[Federal Deputy Commander]**.`);
-//             }
-//             if (targetRankIndex === rankData.find(r => r.name === rankName).rank){
-//                 return interaction.editReply(`❌ **${username}** is already at **${rankName}**`)
-//             }
-//             if (targetRankIndex >= rankData.find(r => r.name === `[Federal Deputy Commander]`).rank){
-//                 return interaction.editReply(`❌ The bot cannot perform rank changes for those ranked **[Federal Deputy Commander]** or above.`);
-//             }
-//             if (Action) {
-//                 RankType = "promoted";
-//             } else {
-//                 RankType = "demoted";
-//             }
-//             // console.log(targetRankIndex, username)
-//             const oldRank = rankData.find(rank => rank.rank === targetRankIndex).name;
-//             await retry(async () => {
-//                 await noblox.setRank(groupId, userId, rankName);
-//             });
-
-//             const embed = new EmbedBuilder()
-//                 .setTitle(`Rank Change Successful`)
-//                 .setDescription(`**${username}** has been successfully ${RankType} to **${rankName}**.`)
-//                 .setColor(Action ? '#00d907' : "#ad0000")
-//                 .setTimestamp();
-
-//                 await interaction.editReply({ embeds: [embed] });
-//                 const logChannel = await client.channels.fetch(logChannelId);
-//                 await logChannel.send(`\`The last rank change was made by ${interaction.member.displayName} to ${username} using the rank command.\``)
-
-//             } catch (error) {
-//             logerror(`Error in rank change: ${error.message}`)
-//             console.error(`Error handling rank change:`, error);
-//             await interaction.editReply(`❌ An error occurred while processing this command.`);
-//         }
-//     }
-//     if (interaction.commandName == `phaseupdate`) {
-//         const executorId = await retry(async () => await noblox.getIdFromUsername(interaction.member.displayName));
-//         const executorRankIndex = await retry(async () => await getUserRankIndex(executorId));
-//         let UserPhase = ""
-//         if (executorRankIndex <= 0) {
-//             return interaction.editReply(`You are not in the group. Join the [Federal Guard Academy group](<https://www.roblox.com/communities/35417960/FRP-Federal-Guard-Academy#!/about>).`);
-//         }
-//         const executorRoles = interaction.member.roles.cache.map(role => role.name);
-//         // console.log(executorRoles);
-//         const Phases = [
-//             "[Phase 1]","[Phase 2]","[Phase 3]","[Phase 4]","[Phase 5]"
-//         ]
-//         for (let phase of Phases){
-//             // console.log(phase)
-//             if (executorRoles.includes(phase)){
-//                 UserPhase = phase;
-//                 // console.log(UserPhase)
-//                 break;
-//             }
-//         }
-
-//             try {
-//                 if(UserPhase === ""){
-//                     return interaction.editReply("You do not have any phase role.")
-//                 } 
-//                 if (executorRankIndex >= 6){
-//                     return interaction.editReply("Instructor+ can not use this command.")
-//                 } 
-//                     if (executorRankIndex == rankData.find(rank => rank.name === UserPhase).rank) {
-//                         return interaction.editReply(`You already have the correct rank in the group.`);
-//                     }
-//                 await retry(noblox.setRank(groupId, executorId, UserPhase));
-//                 interaction.editReply(`You have been successfully given ${UserPhase} in the group.`)
-
-//             } catch(error){
-//                 logerror(`Error in phase change: ${error.message}`)
-//                 interaction.editReply("An error has occured, let mohamed2enany know!")
-//             }
-//     }
-//     if(interaction.commandName === `test`){
-//         logstuff(interaction.guild.id)
-//         if (interaction.user.id != ownerId){
-//             return interaction.editReply(`Only <@!${ownerId}> can run this command.`);
-//         }
-//         // if (interaction.guild.id != 972498667674140732){
-//         //     return interaction.reply("The bot only works in the Federal Guard Academy server.")
-//         // }
-        
-//         async function getAuditLogData() {
-//             try {
-//                 const auditLogData = await noblox.getAuditLog(groupId, "ChangeRank", 1552234858, "Desc", 10); // Wait for the promise to resolve
-//                 console.log(JSON.stringify(auditLogData)); //DO NOT CHANGE TO logstuff
-//             } catch (error) {
-//                 logerror(`Error in audit logs: ${error.message}`)
-//                 console.error("Error fetching audit log:", error);
-//                 return interaction.editReply("bad job, error happen")
-//             }
-//         }        
-//         getAuditLogData();
-//         interaction.editReply("good job")
-//     }
-//     if(interaction.commandName === `info`){
-//         try {
-//         let result = Math.round(interaction.client.uptime / 60000)
-//         let time = "minutes"
-//         if (result >= 60){
-//             let result1 = result / 60
-// 			result = result1.toFixed(1)
-//             if (result >= 24){
-//             result1 = result / 24
-//             result = result1.toFixed(1)
-//             time = "days"
-//             } else {
-//                     time = "hours"
-//             }
-//         }
-//         const embed1 = new EmbedBuilder()
-//             .setTitle("Information")
-//             .setDescription(`
-//                 The bot was developed and made by <@!${ownerId}> 
-//                 \n\nCurrent Ping for the bot is: **${client.ws.ping}ms** (Can be inaccurate) \n\n
-//                 Uptime: **${result} ${time}**
-//                 `)
-//             .setColor("DarkBlue")
-//             await interaction.editReply({ embeds: [embed1] });
-//         } catch (error){
-//             logerror(`Error in info: ${error.message}`)
-//             console.error(error)
-//         }
-//     }
-//     if(interaction.commandName === `suspend`){
-
-//         try {
-//             let executorRankIndex, executorId;
-//             const user = interaction.options.getUser('target');
-//             const duration = interaction.options.getString('duration'); // e.g., "1d", "3h"
-//             const reason = interaction.options.getString('reason')
-//             const proof = interaction.options.getString('proof')
-//             const member = interaction.guild.members.cache.get(user.id);
-//             const unbanTime = Math.floor((Date.now() + parseDuration(duration)) / 1000);
-//             const usertodm = await client.users.fetch(user.id)
-//             try {
-//                 executorId = await retry(async () => await noblox.getIdFromUsername(interaction.member.displayName));
-//                 executorRankIndex = await retry(async () => await getUserRankIndex(executorId));
-//             } catch(error) {
-//                 return interaction.editReply(`❌ Your current server nickname does not match any Roblox user.`);
-//             }
-            
-//             if (executorRankIndex < rankData.find(rank => rank.name === `[Deputy Director]`).rank) {
-//                 return interaction.editReply(`❌ You do not have permission to use this command.`);
-//             }
-//             await member.roles.add("1302266631329808384")
-//             const embed1 = new EmbedBuilder()
-//             .setTitle("New Suspension")
-//             .setColor("DarkNavy")
-//             .setDescription(`A new suspension has been made!`)
-//             .setTimestamp(Date.now())
-//             .addFields([
-//                 {
-//                   name: "Suspend",
-//                   value: `<@!${user.id}>`,
-//                   inline: true
-//                 },
-//                 {
-//                     name: "Reason",
-//                     value: `${reason}`,
-//                     inline: true
-//                   },
-//                   {
-//                     name: "Duration",
-//                     value: `This suspension will last for ${makedurationbigger(duration)}`,
-//                     inline: true
-//                   },
-//                   { name: '\u200b', value: '\u200b', inline:false},
-//                   {
-//                     name: "Issued by",
-//                     value: `<@!${interaction.member.id}>`,
-//                     inline: true
-//                   },
-//                   {
-//                     name: "Expiration date",value: `<t:${unbanTime}:F> (<t:${unbanTime}:R>)`,inline: true}
-//                   ]);
-//             const  embed2 = new EmbedBuilder()
-//                   .setTitle("Suspension")
-//                   .setDescription(`You have been suspending in the Federal Guard Academy for ${makedurationbigger(duration)} for the following reason(s):\n- ${reason} \n\nIf think you got suspended wrongly or something similar, direct message a Deputy Director or higher.`)
-//                   .setColor("DarkRed")
-//                   .setTimestamp(Date.now());
-
-//             await chnlsend("1332366775811051530", { embeds: [embed1] })
-//             await usertodm.send({ embeds: [embed2] })
-//             await interaction.editReply(`User <@!${user.id}> suspended successfully.`)
-//         } catch(error){
-//             console.error(error)
-//             logerror(`Error in suspend: ${error.message}`)
-//         }
-//     }
-// });
-// const axios = require('axios');
 async function fetchExecutorFromAuditLog(targetId) {
     const currentTime = new Date(); // Current date and time
     const adjustedCurrentTime = new Date(currentTime.getTime() - 2 * 60 * 60 * 1000);
@@ -519,11 +186,7 @@ async function fetchExecutorFromAuditLog(targetId) {
             username: action.actor.user.username,
             role: action.actor.role.name
         }));
-    
-
-        
-    //     return executorsWithRoles;
-    // }        
+         
         return executorsWithRoles
         } catch (error) {
         console.error("Error fetching audit log:", error);
@@ -531,23 +194,6 @@ async function fetchExecutorFromAuditLog(targetId) {
         return null;
         }
 }
-
-// async function testAuditLog() {
-    
-//     try {
-//         const response = await axios.get(`https://groups.roblox.com/v1/groups/${groupId}/audit-log`, {
-//             headers: {
-//                 'Cookie': `.ROBLOSECURITY=${ROBLOSECURITY}`,
-//                 'Content-Type': 'application/json'
-//             }
-//         });
-//         console.log("✅ Direct API Response:", response.data);
-//     } catch (error) {
-//         console.error("❌ Direct API Call Failed:", error.response ? error.response.data : error);
-//     }
-// }
-
-// testAuditLog();
 async function monitorRankChanges() {
     try {
         const logChannel = await client.channels.fetch(logChannelId);
@@ -594,37 +240,13 @@ if (logChannel) logChannel.send("An error has occurred.");
         console.error('Error monitoring rank changes:', error);
     }
 }
-
-// async function leaveothers(){
-
-// }
-
 client.once(`ready`, async () => {
     logstuff(`✅ Logged in as ${client.user.tag}`);
     await initialize();
-    await deploySlashCommands();
+    await deploySlashCommands(client, clientId, guildId);
     setInterval(async () => { await monitorRankChanges() }, 1000);
 });
 
-// process.on('uncaughtException', (error) => {
-//     console.error('Uncaught Exception:', error);
-    
-//     // Optionally, you can send a notification about this error to a Discord channel here
-// });
-
-// // Handle unhandled promise rejections globally
-// process.on('unhandledRejection', (reason, promise) => {
-//     console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-// });
-
-// // Add error handling for Discord events
-// client.on('error', (error) => {
-//     console.error('Discord Client Error:', error);
-// });
-
-// client.on('warn', (warning) => {
-//     console.warn('Discord Client Warning:', warning);
-// });
 client.on('rateLimit', (rateLimitInfo) => {
     console.warn(`Rate limit hit:`, rateLimitInfo);
 });
@@ -636,26 +258,10 @@ client.login(botToken).catch((error) => {
 function getclient(){
     return client || ""
 }
-function getgroupid(){
-    return groupId || ""
-}
 function getlogchannelid(){
     return logChannelId || ""
 }
-function getclientid(){
-    return clientId || ""
-}
-function getguildid(){
-    return guildId || ""
-}
-function getownerid(){
-    return ownerId || ""
-}
 module.exports = {
 getclient
-,getgroupid
 ,getlogchannelid
-,getclientid
-,getguildid
-,getownerid
 }
