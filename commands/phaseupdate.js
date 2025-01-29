@@ -1,7 +1,5 @@
 const { getgroupid, getclient } = require("../index.js");
 const { getUserRankIndex, logerror, retry, noblox } = require("../utils.js")
-const client = getclient;
-const groupId = getgroupid;
 let rankData = [];
     retry(async () => {
         rankData = await noblox.getRoles(groupId);
@@ -20,6 +18,8 @@ module.exports = {
     .setName(`phaseupdate`)
     .setDescription(`Sync your current group roles with current roles`),
     async execute(interaction){
+        const client = getclient || "";
+        const groupId = getgroupid || "";
         const executorId = await retry(async () => await noblox.getIdFromUsername(interaction.member.displayName));
         const executorRankIndex = await retry(async () => await getUserRankIndex(executorId));
         let UserPhase = ""

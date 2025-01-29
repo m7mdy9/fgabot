@@ -1,6 +1,5 @@
 const { getclient, getownerid} = require("../index.js");
-const client = getclient;
-const ownerId = getownerid;
+
 const { SlashCommandBuilder, EmbedBuilder} = require("discord.js");
 const { logerror } = require("../utils.js");
 module.exports = {
@@ -22,6 +21,7 @@ module.exports = {
                                 time = "hours"
                         }
                     }
+                    const ownerId = getownerid || "";
                     const embed1 = new EmbedBuilder()
                         .setTitle("Information")
                         .setDescription(`
@@ -32,6 +32,7 @@ module.exports = {
                         .setColor("DarkBlue")
                         await interaction.editReply({ embeds: [embed1] });
                     } catch (error){
+                        const client = getclient || "";
                         logerror(client, `Error in info: `, error)
                     }
         }

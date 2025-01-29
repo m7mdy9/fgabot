@@ -1,15 +1,12 @@
 
 const { getclient, getclientid, getlogchannelid, getownerid} = require("../index.js");
-const client = getclient;
-const logChannelId = getlogchannelid;
-const ownerId = getownerid;
 const { retry, getUserRankIndex, noblox, parseDuration, makedurationbigger } = require("../utils.js")
 const { SlashCommandBuilder, EmbedBuilder} = require("discord.js")
 let rankData = [];
 retry(async () => {
-        rankData = await noblox.getRoles(groupId);
-        
-        for (const rank of rankData) {
+    rankData = await noblox.getRoles(groupId);
+    
+    for (const rank of rankData) {
             const users = await noblox.getPlayers(groupId, rank.id);
             for (const user of users) {
                 previousGroupRanks[user.userId] = rank.name;
@@ -17,19 +14,19 @@ retry(async () => {
         }
         // console.log(rankData, previousGroupRanks);
     });
-const rankData1 = rankData.slice(1, 11);
-const rankChoices = rankData1.map(rank => ({ name: rank.name, value: rank.name }));
-
-module.exports = {
-    data: new SlashCommandBuilder()
+    const rankData1 = rankData.slice(1, 11);
+    const rankChoices = rankData1.map(rank => ({ name: rank.name, value: rank.name }));
+    
+    module.exports = {
+        data: new SlashCommandBuilder()
     .setName(`rank`)
     .setDescription(`Promote or demote a user in the Roblox group.`)
     .addStringOption(option =>
         option.setName(`username`)
             .setDescription(`The Roblox username of the member.`)
             .setRequired(true)
-    )
-    .addStringOption(option =>
+        )
+        .addStringOption(option =>
         option.setName(`rank`)
             .setDescription(`Select the rank.`)
             .setRequired(true)
@@ -37,8 +34,11 @@ module.exports = {
     )
     .toJSON(),
     async execute(interaction){
+        const client = getclient || "";
+        const logChannelId = getlogchannelid || "";
+        const ownerId = getownerid || "";
         const username = interaction.options.getString(`username`);
-                const rankName = interaction.options.getString(`rank`);
+        const rankName = interaction.options.getString(`rank`);
                 try {
                     
                     let userId, executorId;

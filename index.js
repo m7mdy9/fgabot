@@ -634,22 +634,22 @@ client.login(botToken).catch((error) => {
     console.error('Failed to login:', error);
 });
 function getclient(){
-    return client
+    return client || ""
 }
 function getgroupid(){
-    return groupId
+    return groupId || ""
 }
 function getlogchannelid(){
-    return logChannelId
+    return logChannelId || ""
 }
 function getclientid(){
-    return clientId
+    return clientId || ""
 }
 function getguildid(){
-    return guildId
+    return guildId || ""
 }
 function getownerid(){
-    return ownerId
+    return ownerId || ""
 }
 module.exports = {
 getclient

@@ -1,19 +1,18 @@
 const { getclient } = require("../index.js");
-const client = getclient;
 const { retry, getUserRankIndex, noblox, parseDuration, makedurationbigger } = require("../utils.js")
 const { SlashCommandBuilder, EmbedBuilder} = require("discord.js")
 let rankData = [];
-    retry(async () => {
-            rankData = await noblox.getRoles(groupId);
-            
-            for (const rank of rankData) {
-                const users = await noblox.getPlayers(groupId, rank.id);
-                for (const user of users) {
-                    previousGroupRanks[user.userId] = rank.name;
-                }
-            }
-            // console.log(rankData, previousGroupRanks);
-        });
+retry(async () => {
+    rankData = await noblox.getRoles(groupId);
+    
+    for (const rank of rankData) {
+        const users = await noblox.getPlayers(groupId, rank.id);
+        for (const user of users) {
+            previousGroupRanks[user.userId] = rank.name;
+        }
+    }
+    // console.log(rankData, previousGroupRanks);
+});
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -38,9 +37,10 @@ module.exports = {
         option.setName(`proof`)
         .setDescription(`Put the link to the corresponding strike log`)
         .setRequired(true)
-     ),
-     async execute(interaction){
+    ),
+    async execute(interaction){
         try {
+            const client = getclient || "";
             let executorRankIndex, executorId;
             const user = interaction.options.getUser('target');
             const duration = interaction.options.getString('duration'); // e.g., "1d", "3h"
