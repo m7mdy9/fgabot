@@ -3,7 +3,7 @@ const fs = require("fs")
 const path = require('path')
 const { Client, GatewayIntentBits, EmbedBuilder, REST, Routes, SlashCommandBuilder, SortOrderType, parseEmoji, Collection } = require('discord.js');
 const noblox = require('noblox.js');
-const { deploySlashCommands } = require('./commandHandler.js'); // Import the deploy function
+const { deploySlashCommands } = require('./utils/commandHandler.js'); // Import the deploy function
 
 noblox.settings.timeout = 300000;
 const botToken = process.env.DISCORDTOKEN;
@@ -60,47 +60,7 @@ async function retry(fn, maxRetries = 3, delayMs = 2000) {
     throw lastError; // Rethrow the last error after max retries
 }
 
-function parseDuration(duration) {
-    const regex = /^(\d+)([dhm])$/; // Matches formats like "1d", "3h", "15m"
-    const match = duration.match(regex);
 
-    if (!match) return null;
-
-    const value = parseInt(match[1], 10);
-    const unit = match[2];
-
-    switch (unit) {
-        case 'd': return value * 24 * 60 * 60 * 1000; // Days to milliseconds
-        case 'h': return value * 60 * 60 * 1000;      // Hours to milliseconds
-        case 'm': return value * 60 * 1000;          // Minutes to milliseconds
-        default: return null;
-    }
-}
-function makedurationbigger(duration) {
-    const regex = /^(\d+)([dhm])$/; // Matches formats like "1d", "3h", "15m"
-    const match = duration.match(regex);
-    
-    if (!match) return null;
-    
-    const value = parseInt(match[1], 10);
-    const unit = match[2];
-    
-    switch (unit) {
-        case 'd': return value + " days" // Days to milliseconds
-        case 'h': return value +  " hours"   // Hours to milliseconds
-        case 'm': return value + " minutes"        // Minutes to milliseconds
-        default: return null;
-    }
-    
-}
-async function chnlsend(channel, message){
-    try {
-    const logChannel = await client.channels.fetch(channel);
-    return await logChannel.send(message)
-    } catch(error){
-        console.error(error)
-    }
-}
 async function errsend(message){
         try {
     const logChannel = await client.channels.fetch(e_channel_Id);
@@ -144,15 +104,6 @@ async function initialize() {
         isFirstRun = false;
         // console.log(rankData, previousGroupRanks);
     });
-}
-async function getUserRankIndex(userId) {
-    try {
-        const rank = await noblox.getRankInGroup(groupId, userId);
-        return rank;
-    } catch (error) {
-        logerror(`${error.message}`)
-        return -1;
-    }
 }
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;

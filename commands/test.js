@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js")
-const { logstuff } = require("../utils.js")
+const { logstuff } = require("../utils/utils.js")
 const { getclient } = require("../index.js")
 require('dotenv').config({ path: '../.env' })
 const ownerId = process.env.ownerId

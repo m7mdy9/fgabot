@@ -1,4 +1,4 @@
-const { getUserRankIndex, logerror, retry, noblox } = require("../utils.js")
+const { getUserRankIndex, logerror, retry, noblox } = require("../utils/utils.js")
 require('dotenv').config({ path: '../.env' })
 const groupId = process.env.groupID
 let rankData = [];

@@ -1,4 +1,4 @@
-const { retry, getUserRankIndex, noblox, logerror } = require("../utils.js");
+const { retry, getUserRankIndex, noblox, logerror } = require("../utils/utils.js");
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 require('dotenv').config({ path: '../.env' });
 const groupId = process.env.groupID;
