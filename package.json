@@ -1,4 +1,7 @@
 {
+  "name": "fgabot",
+  "version": "1.7.3",
+  "description": "Federal Guard Academy bot made for automating stuff in FGA.",
   "dependencies": {
     "axios": "^1.7.9",
     "discord.js": "^14.17.3",
@@ -6,5 +9,30 @@
     "express": "^4.21.2",
     "noblox.js": "^6.0.2"
   },
-  "type": "commonjs"
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "author": {
+    "name": "m7mdy9",
+    "email": "hamestar1122@gmail.com",
+    "url": "https://m7mdy9.github.io/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/m7mdy9/fgabot"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "javascript",
+    "automation"
+  ],
+  "scripts": {
+  "start": "node index.js",
+  "build": "echo: 'No build step required for plain JavaScript... - m7mdy9'",
+  "deploy": "npm run build && npm run start"
+  },
+  "homepage": "https://m7mdy9.github.io/fgabot"
 }

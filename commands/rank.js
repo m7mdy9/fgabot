@@ -33,8 +33,6 @@ module.exports = {
                     choices: rankChoices // Add rank choices
                 }
             ];
-
-            console.log("Rank choices populated:", rankChoices);
         } catch (error) {
             console.error("Error setting up rank command:", error);
         }

@@ -5,7 +5,6 @@ const { REST, Routes, Collection } = require("discord.js");
 async function loadCommands(client) {
     const targetdir = path.dirname(__dirname)
     const commandsPath = path.join(targetdir, "commands");
-    console.log(path.dirname)
     const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith(".js"));
 
     client.commands = new Collection(); // Store commands
