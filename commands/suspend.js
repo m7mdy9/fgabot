@@ -17,29 +17,34 @@ retry(async () => {
 });
 
 module.exports = {
-    data: new SlashCommandBuilder()
-    .setName(`suspend`)
-    .setDescription(`Used to suspend Fedearl Guard Academy members by Deputy Director or higher.`)
-    .addUserOption(option =>
-        option.setName(`target`)
-        .setDescription(`User to be suspended`)
-        .setRequired(true)
-    )
-    .addStringOption(option =>
-        option.setName('duration')
-        .setDescription('Duration of the ban (e.g., 1d, 3h, 15m !MUST BE LIKE THAT!)')
-        .setRequired(true)
-    )
-    .addStringOption(option =>
-        option.setName("reason")
-        .setDescription("Reason for the suspension")
-        .setRequired(true)
-    )
-    .addStringOption(option =>
-        option.setName(`proof`)
-        .setDescription(`Put the link to the corresponding strike log`)
-        .setRequired(true)
-    ),
+    name: "suspend", // Command name
+    description: "Used to suspend Federal Guard Academy members by Deputy Director or higher.", // Command description
+    options: [ // Define options directly
+        {
+            name: "target",
+            description: "User to be suspended",
+            type: 6, // USER type
+            required: true
+        },
+        {
+            name: "duration",
+            description: "Duration of the ban (e.g., 1d, 3h, 15m !MUST BE LIKE THAT!)",
+            type: 3, // STRING type
+            required: true
+        },
+        {
+            name: "reason",
+            description: "Reason for the suspension",
+            type: 3, // STRING type
+            required: true
+        },
+        {
+            name: "proof",
+            description: "Put the link to the corresponding strike log",
+            type: 3, // STRING type
+            required: true
+        }
+    ],
     async execute(interaction){
         const client = interaction.client
         try {

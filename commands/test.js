@@ -5,9 +5,8 @@ require('dotenv').config({ path: '../.env' })
 const ownerId = process.env.ownerId
 const client = getclient;
 module.exports = {
-    data: new SlashCommandBuilder()
-    .setName(`test`)
-    .setDescription(`test`),
+    name: "test",
+    description: "A test command",
     async execute(interaction){
         logstuff(client, interaction.guild.id)
         if (interaction.user.id != ownerId){

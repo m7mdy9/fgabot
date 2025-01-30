@@ -8,27 +8,31 @@ let rankData = [];
 let rankChoices = [];
 
 module.exports = {
-    data: null, // Placeholder for now
+    name: "rank", // Command name
+    description: "Promote or demote a user in the Roblox group.", // Command description
+    options: [], // Placeholder for options (will be populated in setup)
     setup: async function () {
         try {
-            rankData = await noblox.getRoles(groupId);
+            const rankData = await noblox.getRoles(groupId);
             const rankData1 = rankData.slice(1, 11); // Adjust slice as needed
-            rankChoices = rankData1.map(rank => ({ name: rank.name, value: rank.name }));
+            const rankChoices = rankData1.map(rank => ({ name: rank.name, value: rank.name }));
 
-            this.data = new SlashCommandBuilder()
-                .setName('rank')
-                .setDescription('Promote or demote a user in the Roblox group.')
-                .addStringOption(option =>
-                    option.setName('username')
-                        .setDescription('The Roblox username of the member.')
-                        .setRequired(true)
-                )
-                .addStringOption(option =>
-                    option.setName('rank')
-                        .setDescription('Select the rank.')
-                        .setRequired(true)
-                        .addChoices(...rankChoices) // Spread the array into individual arguments
-                );
+            // Dynamically populate the options
+            this.options = [
+                {
+                    name: "username",
+                    description: "The Roblox username of the member.",
+                    type: 3, // STRING type
+                    required: true
+                },
+                {
+                    name: "rank",
+                    description: "Select the rank.",
+                    type: 3, // STRING type
+                    required: true,
+                    choices: rankChoices // Add rank choices
+                }
+            ];
 
             console.log("Rank choices populated:", rankChoices);
         } catch (error) {

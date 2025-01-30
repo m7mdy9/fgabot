@@ -6,7 +6,7 @@ async function loadCommands(client) {
     const commandsPath = path.join(__dirname, "commands");
     const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith(".js"));
 
-    client.commands = new Collection(); // Ensure commands are stored properly
+    client.commands = new Collection(); // Store commands
     const commands = [];
 
     for (const file of commandFiles) {
@@ -14,17 +14,26 @@ async function loadCommands(client) {
 
         // Call the setup function if it exists
         if (command.setup) {
-            await command.setup();
+            await command.setup(client); // Pass client if needed
         }
 
-        // ✅ Check if command is structured correctly
-        if (!command || !command.data || typeof command.data.toJSON !== "function") {
-            console.error(`❌ Skipping "${file}": Missing or invalid "data" property.`);
-            continue; // Skip this command
+        // ✅ Automatically generate the `data` object if it doesn't exist
+        if (!command.data) {
+            command.data = {
+                name: command.name || file.replace(".js", ""), // Use file name as fallback
+                description: command.description || "No description provided",
+                options: command.options || [] // Default to no options
+            };
+        }
+
+        // Validate the command structure
+        if (!command.data.name || !command.data.description) {
+            console.error(`❌ Skipping "${file}": Missing required "name" or "description" properties.`);
+            continue;
         }
 
         client.commands.set(command.data.name, command); // Store the command
-        commands.push(command.data.toJSON()); // Convert for deployment
+        commands.push(command.data); // Add to deployment list
     }
 
     return commands;

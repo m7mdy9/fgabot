@@ -109,7 +109,7 @@ client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
 
     const command = client.commands.get(interaction.commandName);
-
+    consooe.log(command)
     if (!command) {
         console.error(`No command matching ${interaction.commandName} was found.`);
         return;

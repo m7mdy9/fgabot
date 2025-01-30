@@ -3,9 +3,8 @@ const { SlashCommandBuilder, EmbedBuilder} = require("discord.js");
 const { logerror } = require("../utils/utils.js");
 const ownerId = process.env.ownerId
 module.exports = {
-    data:  new SlashCommandBuilder()
-        .setName(`info`)
-        .setDescription(`Information`),
+    name: "info",
+    description: "Information.",
         async execute(interaction) {
             const client = interaction.client
             try {
