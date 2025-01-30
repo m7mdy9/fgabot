@@ -29,6 +29,7 @@ app.get('/', (req, res) => {
   res.send('Bot is alive!');
 });
 
+
 // Start the Express server on the port
 app.listen(port, () => {
   logstuff(`Server running on port ${port}`);
