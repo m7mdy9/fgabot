@@ -1,9 +1,7 @@
 require("dotenv").config()
 const noblox = require("noblox.js")
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js")
-const { getgroupid } = require("./index.js")
-let groupId = null
-try {groupId = getgroupid || ""}catch(err){console.error(err)}
+const groupId = process.env.groupId
 
 async function getUserRankIndex(userId) {
     try {
@@ -59,9 +57,9 @@ function makedurationbigger(duration) {
     const unit = match[2];
     
     switch (unit) {
-        case 'd': return value + " days" // Days to milliseconds
-        case 'h': return value +  " hours"   // Hours to milliseconds
-        case 'm': return value + " minutes"        // Minutes to milliseconds
+        case 'd': return value + " day(s)" // Days to milliseconds
+        case 'h': return value +  " hour(s)"   // Hours to milliseconds
+        case 'm': return value + " minute(s)"        // Minutes to milliseconds
         default: return null;
     }
     
@@ -76,7 +74,7 @@ async function chnlsend(client, channel, message){
 }
 async function errsend(client, message){
         try {
-    const logChannel = await client.channels.fetch(e_channel_Id);
+    const logChannel = await client.channels.fetch("1332377984195235973");
     return await logChannel.send(`Error:\n\`\`\`${message.toString()}\`\`\``)
     } catch(error){
         console.error(error)
@@ -84,7 +82,7 @@ async function errsend(client, message){
 }
 async function noterrsend(client, message){
         try {
-    const asds = await client.channels.fetch(e_channel_Id);
+    const asds = await client.channels.fetch("1332377984195235973");
     return await asds.send(`\`\`\`${message.toString()}\`\`\``)
     } catch(error){
         console.error(error)

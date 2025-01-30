@@ -1,40 +1,51 @@
-const fs = require('fs');
-const path = require('path');
-const { REST, Routes } = require('discord.js');
+const fs = require("fs");
+const path = require("path");
+const { REST, Routes, Collection } = require("discord.js");
 
-// Load commands dynamically from the 'commands' directory
-function loadCommands(client) {
-  const commandsPath = path.join(__dirname, 'commands');
-  const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-  const commands = [];
+async function loadCommands(client) {
+    const commandsPath = path.join(__dirname, "commands");
+    const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith(".js"));
 
-  // Dynamically import each command
-  for (const file of commandFiles) {
-    const command = require(path.join(commandsPath, file));
-    client.commands.set(command.data.name, command); // Add command to client.commands
-    commands.push(command.data.toJSON()); // Prepare for deploying
-  }
+    client.commands = new Collection(); // Ensure commands are stored properly
+    const commands = [];
 
-  return commands;
+    for (const file of commandFiles) {
+        const command = require(path.join(commandsPath, file));
+
+        // Call the setup function if it exists
+        if (command.setup) {
+            await command.setup();
+        }
+
+        // ✅ Check if command is structured correctly
+        if (!command || !command.data || typeof command.data.toJSON !== "function") {
+            console.error(`❌ Skipping "${file}": Missing or invalid "data" property.`);
+            continue; // Skip this command
+        }
+
+        client.commands.set(command.data.name, command); // Store the command
+        commands.push(command.data.toJSON()); // Convert for deployment
+    }
+
+    return commands;
 }
 
-// Deploy slash commands to Discord
 async function deploySlashCommands(client, clientId, guildId) {
-  const commands = loadCommands(client); // Load commands
+    const commands = await loadCommands(client);
 
-  const rest = new REST({ version: '10' }).setToken(process.env.DISCORDTOKEN);
+    const rest = new REST({ version: "10" }).setToken(process.env.DISCORDTOKEN);
 
-  try {
-    console.log('Clearing old commands...');
-    await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: [] });
+    try {
+        console.log("🗑️ Clearing old commands...");
+        await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: [] });
 
-    console.log('Deploying new commands...');
-    await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands });
+        console.log("🚀 Deploying new commands...");
+        await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands });
 
-    console.log('✅ Slash commands deployed successfully!');
-  } catch (error) {
-    console.error('Error deploying commands:', error);
-  }
+        console.log("✅ Slash commands deployed successfully!");
+    } catch (error) {
+        console.error("❌ Error deploying commands:", error);
+    }
 }
 
 module.exports = { deploySlashCommands };

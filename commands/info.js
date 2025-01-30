@@ -1,4 +1,3 @@
-const { getclient} = require("../index.js");
 require('dotenv').config({ path: '../.env' })
 const { SlashCommandBuilder, EmbedBuilder} = require("discord.js");
 const { logerror } = require("../utils.js");
@@ -8,6 +7,7 @@ module.exports = {
         .setName(`info`)
         .setDescription(`Information`),
         async execute(interaction) {
+            const client = interaction.client
             try {
                     let result = Math.round(interaction.client.uptime / 60000)
                     let time = "minutes"
@@ -24,16 +24,11 @@ module.exports = {
                     }
                     const embed1 = new EmbedBuilder()
                         .setTitle("Information")
-                        .setDescription(`
-                            The bot was developed and made by <@!${ownerId}> 
-                            \n\nCurrent Ping for the bot is: **${client.ws.ping}ms** (Can be inaccurate) \n\n
-                            Uptime: **${result} ${time}**
-                            `)
+                        .setDescription(`The bot was developed and made by <@!${ownerId}> \n\nCurrent Ping for the bot is: **${client.ws.ping}ms** (Can be inaccurate) \n\nUptime: **${result} ${time}**`)
                         .setColor("DarkBlue")
                         await interaction.editReply({ embeds: [embed1] });
                     } catch (error){
-                        const client = getclient || "";
-                        logerror(client, `Error in info: `, error)
+                        logerror(client,`Error in info: `, error)
                     }
         }
 }

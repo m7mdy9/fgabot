@@ -18,7 +18,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 let rankData = [];
 let previousGroupRanks = {};
 let isFirstRun = true;
-
+client.commands = new Collection();
 const express = require('express');
 const app = express();
 
@@ -262,6 +262,5 @@ function getlogchannelid(){
     return logChannelId || ""
 }
 module.exports = {
-getclient
-,getlogchannelid
+getlogchannelid
 }

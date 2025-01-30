@@ -1,9 +1,9 @@
-const { getclient } = require("../index.js");
-const { retry, getUserRankIndex, noblox, parseDuration, makedurationbigger } = require("../utils.js")
+const { retry, getUserRankIndex, noblox, parseDuration, makedurationbigger, logerror, chnlsend} = require("../utils.js")
 const { SlashCommandBuilder, EmbedBuilder} = require("discord.js")
 require('dotenv').config({ path: '../.env' })
 const groupId = process.env.groupID
 let rankData = [];
+let previousGroupRanks = {};
 retry(async () => {
     rankData = await noblox.getRoles(groupId);
     
@@ -41,6 +41,7 @@ module.exports = {
         .setRequired(true)
     ),
     async execute(interaction){
+        const client = interaction.client
         try {
             let executorRankIndex, executorId;
             const user = interaction.options.getUser('target');
@@ -98,7 +99,7 @@ module.exports = {
                     .setColor("DarkRed")
                     .setTimestamp(Date.now());
 
-            await chnlsend("1332366775811051530", { embeds: [embed1] })
+            await chnlsend(client, "1332366775811051530", { embeds: [embed1] })
             await usertodm.send({ embeds: [embed2] })
             await interaction.editReply(`User <@!${user.id}> suspended successfully.`)
         } catch(error){

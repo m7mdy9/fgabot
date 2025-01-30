@@ -1,9 +1,8 @@
-const { getclient } = require("../index.js");
 const { getUserRankIndex, logerror, retry, noblox } = require("../utils.js")
 require('dotenv').config({ path: '../.env' })
-const client = getclient || "";
 const groupId = process.env.groupID
 let rankData = [];
+let previousGroupRanks = {};
     retry(async () => {
         rankData = await noblox.getRoles(groupId);
         
@@ -21,6 +20,7 @@ module.exports = {
     .setName(`phaseupdate`)
     .setDescription(`Sync your current group roles with current roles`),
     async execute(interaction){
+        const client = interaction.client
         const executorId = await retry(async () => await noblox.getIdFromUsername(interaction.member.displayName));
         const executorRankIndex = await retry(async () => await getUserRankIndex(executorId));
         let UserPhase = ""
