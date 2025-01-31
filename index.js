@@ -1,9 +1,9 @@
 require('dotenv').config();
-const fs = require("fs")
-const path = require('path')
 const { Client, GatewayIntentBits, EmbedBuilder, REST, Routes, SlashCommandBuilder, SortOrderType, parseEmoji, Collection } = require('discord.js');
 const noblox = require('noblox.js');
 const { deploySlashCommands } = require('./utils/commandHandler.js'); // Import the deploy function
+const { retry, logstuff, logerror } = require("./utils/utils.js")
+const express = require('express');
 
 noblox.settings.timeout = 300000;
 const botToken = process.env.DISCORDTOKEN;
@@ -13,13 +13,12 @@ const logChannelId = process.env.channelID;
 const clientId = process.env.CLIENTID;
 const guildId = process.env.GUILDID;
 const ownerId = process.env.ownerId 
-const e_channel_Id = "1332377984195235973";
+const error_channel_id = process.env.e_channel_Id || ""
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 let rankData = [];
 let previousGroupRanks = {};
 let isFirstRun = true;
 client.commands = new Collection();
-const express = require('express');
 const app = express();
 
 // Use the port from the environment variable (Railway assigns this)
@@ -32,7 +31,7 @@ app.get('/', (req, res) => {
 
 // Start the Express server on the port
 app.listen(port, () => {
-  logstuff(`Server running on port ${port}`);
+  logstuff(client,`Server running on port ${port}`);
 });
 app.get('/favicon.ico', (req, res) => {
   res.status(204); // No Content
@@ -41,54 +40,6 @@ app.get('/health', (req, res) => {
     res.status(200).json({ status: 'healthy', uptime: process.uptime() });
 });
 // Retry function to handle timeouts or failed requests
-async function retry(fn, maxRetries = 3, delayMs = 2000) {
-    let attempts = 0;
-    let lastError;
-
-    while (attempts < maxRetries) {
-        try {
-            return await fn();
-        } catch (error) {
-            lastError = error;
-            attempts++;
-            const waitTime = delayMs * Math.pow(2, attempts); // Exponential backoff
-            console.error(`Attempt ${attempts} failed. Retrying in ${waitTime / 1000} seconds...`);
-            await new Promise(resolve => setTimeout(resolve, waitTime));
-        }
-    }
-
-    throw lastError; // Rethrow the last error after max retries
-}
-
-
-async function errsend(message){
-        try {
-    const logChannel = await client.channels.fetch(e_channel_Id);
-    return await logChannel.send(`Error:\n\`\`\`${message.toString()}\`\`\``)
-    } catch(error){
-        console.error(error)
-    }
-}
-async function noterrsend(message){
-        try {
-    const asds = await client.channels.fetch(e_channel_Id);
-    return await asds.send(`\`\`\`${message.toString()}\`\`\``)
-    } catch(error){
-        console.error(error)
-    }
-}
-async function logstuff(message){
-    await noterrsend(message)
-    return console.log(message)
-}
-async function logerror(message, error){
-    if(message === "socket hang up"){
-        return console.error(error)
-    }
-    await errsend(message + error.message)
-    return console.error(message + error)
-}
-
 
 async function initialize() {
     await retry(async () => {
@@ -128,9 +79,6 @@ client.on('interactionCreate', async interaction => {
     }
 });
 async function fetchExecutorFromAuditLog(targetId) {
-    const currentTime = new Date(); // Current date and time
-    const adjustedCurrentTime = new Date(currentTime.getTime() - 2 * 60 * 60 * 1000);
-    const twentyMinutesAgo = new Date(adjustedCurrentTime - 20 * 60 * 1000); // 20 minutes ago
     try {
         const auditLogEntries = await noblox.getAuditLog({group: groupId, actionType: "ChangeRank", sortOrder: "Desc", limit: 10});
         const recentActions = auditLogEntries.data.filter(item => item.description.TargetId === targetId)
@@ -142,7 +90,7 @@ async function fetchExecutorFromAuditLog(targetId) {
         return executorsWithRoles
         } catch (error) {
         console.error("Error fetching audit log:", error);
-        logerror(`Error in fetch Audit log: ${error.message}`)
+        logerror(client, `Error in fetch Audit log: `, error)
         return null;
         }
 }
@@ -163,7 +111,7 @@ async function monitorRankChanges() {
                     exevalue = executor[0].username
                     exerole = executor[0].role
                 } catch (error){
-                    logerror(`Error in the values for promo embed: ${error.message}`)
+                    logerror(client, `Error in the values for promo embed: `, error)
                     exevalue = "Unknown"
                     exerole = "Unknown"
                 }
@@ -188,14 +136,15 @@ async function monitorRankChanges() {
     } catch (error) {
         const logChannel = await client.channels.fetch(logChannelId);
 if (logChannel) logChannel.send("An error has occurred.");
-        logerror(`Error in rank minotring: ${error.message}`)
+        logerror(client, `Error in rank minotring: `, error)
         console.error('Error monitoring rank changes:', error);
     }
 }
 client.once(`ready`, async () => {
-    logstuff(`✅ Logged in as ${client.user.tag}`);
+    logstuff(client,`✅ Logged in as ${client.user.tag}`);
     await initialize();
     await deploySlashCommands(client, clientId, guildId);
+    logstuff(client, `Slash commands successfully deployed.`)
     setInterval(async () => { await monitorRankChanges() }, 1000);
 });
 
@@ -207,12 +156,15 @@ client.on('rateLimit', (rateLimitInfo) => {
 client.login(botToken).catch((error) => {
     console.error('Failed to login:', error);
 });
-function getclient(){
-    return client || ""
-}
+
 function getlogchannelid(){
-    return logChannelId || ""
+    return logChannelId
 }
+function getechannelid(){
+    return error_channel_id
+}
+
 module.exports = {
-getlogchannelid
+    getlogchannelid,
+    getechannelid
 }

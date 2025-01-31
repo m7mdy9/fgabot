@@ -66,16 +66,22 @@ function makedurationbigger(duration) {
 }
 async function chnlsend(client, channel, message){
     try {
-    const logChannel = await client.channels.fetch(channel);
-    return await logChannel.send(message)
+        if (!typeof message === 'string'){
+            message = message.toString()
+        }
+        const logChannel = await client.channels.fetch(channel);
+        return await logChannel.send(message)
     } catch(error){
         console.error(error)
     }
 }
 async function errsend(client, message){
         try {
+    if (!typeof message === 'string'){
+        message = message.toString()
+    }
     const logChannel = await client.channels.fetch("1332377984195235973");
-    return await logChannel.send(`Error:\n\`\`\`${message.toString()}\`\`\``)
+    return await logChannel.send(`Error:\n\`\`\`${message}\`\`\``)
     } catch(error){
         console.error(error)
     }
@@ -83,7 +89,7 @@ async function errsend(client, message){
 async function noterrsend(client, message){
         try {
     const asds = await client.channels.fetch("1332377984195235973");
-    return await asds.send(`\`\`\`${message.toString()}\`\`\``)
+    return await asds.send(`\`\`\`${message}\`\`\``)
     } catch(error){
         console.error(error)
     }
@@ -93,11 +99,18 @@ async function logstuff(client, message){
     return console.log(message)
 }
 async function logerror(client, message, error){
-    if(message === "socket hang up"){
-        return console.error(error)
+    try {
+        if(message === "socket hang up"){
+            return console.error(error)
+        }
+        if(!error.message || !error){
+            return
+        }
+        await errsend(client,`${message}${error.message}`)
+        return console.error(`${message}${error}`)
+    } catch (error){
+        console.error(error)
     }
-    await errsend(client, message + error.message)
-    return console.error(message + error)
 }
 module.exports = {
     retry,

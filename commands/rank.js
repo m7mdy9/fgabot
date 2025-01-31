@@ -13,7 +13,7 @@ module.exports = {
     options: [], // Placeholder for options (will be populated in setup)
     setup: async function () {
         try {
-            const rankData = await noblox.getRoles(groupId);
+            rankData = await noblox.getRoles(groupId);
             const rankData1 = rankData.slice(1, 11); // Adjust slice as needed
             const rankChoices = rankData1.map(rank => ({ name: rank.name, value: rank.name }));
 
