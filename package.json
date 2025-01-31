@@ -30,9 +30,9 @@
     "automation"
   ],
   "scripts": {
-  "start": "node index.js",
+  "start": "node src/index.js",
   "build": "echo 'No build step required for plain JavaScript... - m7mdy9'",
   "deploy": "npm run build && npm run start"
   },
   "homepage": "https://m7mdy9.github.io/fgabot"
-}
+}  
