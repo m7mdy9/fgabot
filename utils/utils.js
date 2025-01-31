@@ -2,7 +2,7 @@ require('dotenv').config({ path: '../.env' })
 const noblox = require("noblox.js")
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js")
 const groupId = process.env.groupId
-
+console.log(groupId)
 async function getUserRankIndex(userId) {
     try {
         const rank = await noblox.getRankInGroup(groupId, userId);

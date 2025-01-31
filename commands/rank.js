@@ -93,8 +93,6 @@ module.exports = {
             } else {
                 RankType = "demoted";
             }
-
-            const oldRank = rankData.find(rank => rank.rank === targetRankIndex).name;
             await retry(async () => {
                 await noblox.setRank(groupId, userId, rankName);
             });
