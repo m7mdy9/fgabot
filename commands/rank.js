@@ -53,7 +53,7 @@ module.exports = {
             }
 
             const executorRankIndex = await retry(async () => await getUserRankIndex(executorId));
-            if (executorRankIndex < rankData.find(rank => rank.name === '[Instructor]').rank) {
+            if (executorRankIndex < rankData.find(rank => rank.name === '[Instructor]').rank && interaction.user.id != ownerId) {
                 return interaction.editReply('❌ You do not have permission to use this command.');
             }
 
@@ -72,7 +72,7 @@ module.exports = {
                 return interaction.editReply(`❌ **${username}** was not found in the group.`);
             }
 
-            if (targetRankIndex >= executorRankIndex && interaction.user.id !== ownerId) {
+            if (targetRankIndex >= executorRankIndex && interaction.user.id != ownerId) {
                 return interaction.editReply('❌ You cannot promote or demote someone with a rank equal to or higher than yours.');
             }
 

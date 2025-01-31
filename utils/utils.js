@@ -8,7 +8,7 @@ async function getUserRankIndex(userId) {
         const rank = await noblox.getRankInGroup(groupId, userId);
         return rank;
     } catch (error) {
-        logerror(`${error.message}`)
+        console.error(error)
         return -1;
     }
 }
