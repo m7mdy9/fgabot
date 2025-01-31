@@ -1,4 +1,4 @@
-require("dotenv").config()
+require('dotenv').config({ path: '../.env' })
 const noblox = require("noblox.js")
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js")
 const groupId = process.env.groupId
@@ -8,8 +8,8 @@ async function getUserRankIndex(userId) {
         const rank = await noblox.getRankInGroup(groupId, userId);
         return rank;
     } catch (error) {
-        console.error(error)
-        return -1;
+        return console.error(error)
+
     }
 }
 async function retry(fn, maxRetries = 3, delayMs = 2000) {
@@ -79,6 +79,9 @@ async function errsend(client, message){
         try {
     if (!typeof message === 'string'){
         message = message.toString()
+    }
+    if(!client.channels || !client.channels.fetch || !message){
+        return console.error(client)
     }
     const logChannel = await client.channels.fetch("1332377984195235973");
     return await logChannel.send(`Error:\n\`\`\`${message}\`\`\``)
