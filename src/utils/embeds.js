@@ -18,7 +18,7 @@ function embed_builder(title, description = null, color = null){
 function embed_rankchange(action, exevalue, exerole, usernamevalue, previousRank, currentRank, timestamp){
     try {
     const color1 = (action === 'Promotion' ? '#00d907' : "#ad0000")
-    const embed = embed_builder({ title:`FGA ${action}`, color:color1})
+    const embed = embed_builder(`FGA ${action}`, null, color1)
         embed.addFields(
             { name: 'User Executing', value: exevalue, inline: true },
             { name: 'User\'s Rank', value: exerole, inline: true },
