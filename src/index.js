@@ -3,6 +3,7 @@ const { Client, GatewayIntentBits, EmbedBuilder, REST, Routes, SlashCommandBuild
 const noblox = require('noblox.js');
 const { deploySlashCommands } = require('./utils/commandHandler.js'); // Import the deploy function
 const { retry, logstuff, logerror } = require("./utils/utils.js")
+const { embed_rankchange } = require("./utils/embeds.js")
 const express = require('express');
 
 noblox.settings.timeout = 300000;
@@ -107,6 +108,7 @@ async function monitorRankChanges() {
                     const currentTimestamp = Math.floor(Date.now() / 1000); // Convert milliseconds to seconds
                     const action = rankData.find(r => r.name === currentRank).rank > rankData.find(r => r.name === previousRank).rank ? 'Promotion' : 'Demotion';
                     let exevalue,exerole;
+                    const timestamp = `<t:${currentTimestamp}:f>`
                     try {
                     exevalue = executor[0].username
                     exerole = executor[0].role
@@ -116,18 +118,7 @@ async function monitorRankChanges() {
                     exerole = "Unknown"
                 }
                     const usernamevalue = user.username || "Unknown";
-                    const embed = new EmbedBuilder()
-                        .setTitle(`FGA ${action}`)
-                        .setColor(action === 'Promotion' ? '#00d907' : "#ad0000")
-                        .addFields(
-                            { name: 'User Executing', value: exevalue, inline: true },
-                            { name: 'User\'s Rank', value: exerole, inline: true },
-                            { name: 'Unit Affected', value: usernamevalue, inline: true },
-                            { name: '\u200b', value: '\u200b', inline:false},
-                            { name: 'Old Rank', value: previousRank, inline: true },
-                            { name: 'New Rank', value: currentRank, inline: true },
-                            { name: 'Date', value: `<t:${currentTimestamp}:f>`, inline: true }
-                        );
+                    const embed = embed_rankchange(action, exevalue, exerole, usernamevalue, previousRank, currentRank, timestamp) 
                     await logChannel.send({ embeds: [embed] });
                 }
                 previousGroupRanks[user.userId] = currentRank;

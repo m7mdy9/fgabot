@@ -1,5 +1,5 @@
+const { embed_builder } = require("../utils/embeds.js");
 const { retry, getUserRankIndex, noblox, parseDuration, makedurationbigger, logerror, chnlsend} = require("../utils/utils.js")
-const { SlashCommandBuilder, EmbedBuilder} = require("discord.js")
 require('dotenv').config({ path: '../.env' })
 const groupId = process.env.groupID
 let rankData = [];
@@ -67,12 +67,9 @@ module.exports = {
                 return interaction.editReply(`❌ You do not have permission to use this command.`);
             }
             await member.roles.add("1302266631329808384")
-            const embed1 = new EmbedBuilder()
-            .setTitle("New Suspension")
-            .setColor("DarkNavy")
-            .setDescription(`A new suspension has been made!`)
-            .setTimestamp(Date.now())
-            .addFields([
+            const embed1 = embed_builder("New Suspension", `A new suspension has been made!`, "DarkNavy")
+            embed1.setTimestamp(Date.now())
+            embed1.addFields([
                 {
                     name: "Suspend",
                     value: `<@!${user.id}>`,
@@ -98,11 +95,11 @@ module.exports = {
                     {
                     name: "Expiration date",value: `<t:${unbanTime}:F> (<t:${unbanTime}:R>)`,inline: true}
                     ]);
-            const  embed2 = new EmbedBuilder()
-                    .setTitle("Suspension")
-                    .setDescription(`You have been suspending in the Federal Guard Academy for ${makedurationbigger(duration)} for the following reason(s):\n- ${reason} \n\nIf think you got suspended wrongly or something similar, direct message a Deputy Director or higher.`)
-                    .setColor("DarkRed")
-                    .setTimestamp(Date.now());
+            const embed2 = embed_builder("Suspension", 
+                `You have been suspending in the Federal Guard Academy for ${makedurationbigger(duration)} for the following reason(s):\n- ${reason} \n\nIf think you got suspended wrongly or something similar, direct message a Deputy Director or higher.`,
+                "DarkRed"               
+        )
+            embed2.setTimestamp(Date.now());
 
             await chnlsend(client, "1332366775811051530", { embeds: [embed1] })
             await usertodm.send({ embeds: [embed2] })

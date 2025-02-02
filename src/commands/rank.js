@@ -101,7 +101,6 @@ module.exports = {
                 .setDescription(`**${username}** has been successfully ${RankType} to **${rankName}**.`)
                 .setColor(Action ? '#00d907' : '#ad0000')
                 .setTimestamp();
-
             await interaction.editReply({ embeds: [embed] });
             const logChannel = await client.channels.fetch(promo_channel);
             await logChannel.send(`\`The last rank change was made by ${interaction.member.displayName} to ${username} using the rank command.\``);

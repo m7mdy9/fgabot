@@ -1,6 +1,8 @@
 require('dotenv').config({ path: '../.env' })
 const { SlashCommandBuilder, EmbedBuilder} = require("discord.js");
 const { logerror, logstuff } = require("../utils/utils.js");
+const { embed_info } = require("../utils/embeds.js")
+
 const ownerId = process.env.ownerId
 module.exports = {
     name: "info",
@@ -21,12 +23,7 @@ module.exports = {
                                 time = "hours"
                         }
                     }
-                    const embed1 = new EmbedBuilder()
-                        .setTitle("Information")
-                        .setDescription(`The bot was developed and made by <@!${ownerId}> \n\nCurrent Ping for the bot is: **${client.ws.ping}ms** (Can be inaccurate) \n\nUptime: **${result} ${time}**`)
-                        .setColor("DarkBlue")
-                    console.log(JSON.stringify(embed1))
-                    logstuff(client, embed1)
+                    const embed1 = embed_info(ownerId, client, result, time)
                         await interaction.editReply({ embeds: [embed1] });
                     } catch (error){
                         logerror(client,`Error in info: `, error)
