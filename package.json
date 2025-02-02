@@ -7,6 +7,7 @@
     "discord.js": "^14.17.3",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "mongodb": "^6.13.0",
     "noblox.js": "^6.0.2"
   },
   "type": "commonjs",
@@ -30,9 +31,9 @@
     "automation"
   ],
   "scripts": {
-  "start": "node src/index.js",
-  "build": "echo 'No build step required for plain JavaScript... - m7mdy9'",
-  "deploy": "npm run build && npm run start"
+    "start": "node src/index.js",
+    "build": "echo 'No build step required for plain JavaScript... - m7mdy9'",
+    "deploy": "npm run build && npm run start"
   },
   "homepage": "https://m7mdy9.github.io/fgabot"
-}  
+}
