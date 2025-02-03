@@ -1,9 +1,10 @@
 const express = require('express');
 const { logstuff } = require('../utils/utils.js'); // Adjust the path as needed
+const cors = require("cors")
 
 function startServer(client) {
     const app = express();
-
+    app.use(cors())
     // Use the port from the environment variable (Railway assigns this)
     const port = process.env.PORT || 3000;
 

@@ -122,7 +122,7 @@ module.exports = {
             await interaction.editReply(`User <@!${user.id}> suspended successfully.`)
         } catch(error){
             if(error.message === "Invalid usage"){ 
-                interaction.editReply("You have entered the wrong time format.")
+                interaction.editReply("You have entered the wrong time format.\nMake sure it's something like this \"10d\" (10 days).")
             }
             else{
                 interaction.editReply("An error has occured.")
