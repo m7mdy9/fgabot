@@ -106,7 +106,6 @@ module.exports = {
             await logChannel.send(`\`The last rank change was made by ${interaction.member.displayName} to ${username} using the rank command.\``);
         } catch (error) {
             logerror(client, 'Error in rank change:', error);
-            console.error('Error handling rank change:', error);
             await interaction.editReply('❌ An error occurred while processing this command.');
         }
     }

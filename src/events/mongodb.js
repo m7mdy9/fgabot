@@ -16,7 +16,7 @@ const connect_db = async () => {
 };
 
 // Define the user schema
-const userSchema = new mongoose.Schema({
+const suspension_Schema = new mongoose.Schema({
     discordId: String,
     suspended_by: String,
     suspender_id: String,
@@ -25,12 +25,23 @@ const userSchema = new mongoose.Schema({
     in_days: String,
     in_ms: String,
 });
+const strike_Schema = new mongoose.Schema({
+    striked_id: String,
+    striker_name: String,
+    striker_id: String,
+    started_on: String,
+    reason: String,
+    expiry_date: String,
+    expiry_ms: String,
+});
 
 // Create the User model
-const User = mongoose.model('Suspension', userSchema);
+const User = mongoose.model('Suspension', suspension_Schema);
+const StrikeDB = mongoose.model('Strike', strike_Schema)
 
 // Export the User model and connect_db function
 module.exports = {
-    User,
     connect_db,
+    User,
+    StrikeDB,
 };

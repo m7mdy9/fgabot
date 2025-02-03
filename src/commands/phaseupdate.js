@@ -17,7 +17,7 @@ let previousGroupRanks = {};
 const { SlashCommandBuilder, EmbedBuilder} = require("discord.js")
 module.exports = {
     name: "phaseupdate",
-    description: `Sync your current group roles with current roles`,
+    description: `Sync your current group rank with current roles`,
     async execute(interaction){
         const client = interaction.client
         const executorId = await retry(async () => await noblox.getIdFromUsername(interaction.member.displayName));

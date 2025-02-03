@@ -23,6 +23,8 @@ let previousGroupRanks = {};
 let isFirstRun = true;
 client.commands = new Collection();
 
+console.log(botToken)
+
 async function initialize() {
     await retry(async () => {
         await noblox.setCookie(ROBLOSECURITY);
@@ -54,6 +56,9 @@ client.on('interactionCreate', async interaction => {
     }
 
     try {
+        if (fullCommand === "eval" && interaction.user.id !== ownerId){
+            return interaction.reply({ content: `Only <@!${ownerId}> can run this command buddy, we don't want anyone doing bad stuff do we?`, ephemeral: true})
+        }
         await interaction.deferReply();
 
         // Restriction check (same as before)
