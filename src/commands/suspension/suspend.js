@@ -1,8 +1,7 @@
-const { embed_builder } = require("../utils/embeds.js");
-const { retry, getUserRankIndex, noblox, parseDuration, makedurationbigger, logerror, chnlsend} = require("../utils/utils.js")
-const { User } = require("../events/mongodb.js")
-require('dotenv').config({ path: '../.env' })
-const groupId = process.env.groupID
+const { embed_builder } = require("../../utils/embeds.js");
+const { retry, getUserRankIndex, noblox, parseDuration, makedurationbigger, logerror, chnlsend} = require("../../utils/utils.js")
+const { User } = require("../../events/mongodb.js")
+const { groupId } = require("../../configs/config.json")
 let rankData = [];
 let previousGroupRanks = {};
 retry(async () => {
@@ -18,7 +17,7 @@ retry(async () => {
 });
 
 module.exports = {
-    name: "suspend", // Command name
+    name: "add", // Command name
     description: "Used to suspend Federal Guard Academy members by Deputy Director or higher.", // Command description
     options: [ // Define options directly
         {

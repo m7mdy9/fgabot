@@ -1,11 +1,9 @@
-const { embed_builder } = require("../utils/embeds.js");
-const { retry, getUserRankIndex, noblox, parseDuration, makedurationbigger, logerror, chnlsend} = require("../utils/utils.js")
-const { User } = require("../events/mongodb.js")
-require('dotenv').config({ path: '../.env' })
-const groupId = process.env.groupID
+const { logerror} = require("../../utils/utils.js")
+const { User } = require("../../events/mongodb.js")
+require('dotenv').config()
 
 module.exports = {
-    name: "removesuspension", // Command name
+    name: "remove", // Command name
     description: "Used to remove suspensions by Deputy Director or higher.", // Command description
     options: [ // Define options directly
         {
@@ -24,7 +22,7 @@ module.exports = {
     async execute(interaction){
         const client = interaction.client
         try {
-            if(!interaction.options.getUser('target') || !interaction.options.getString("target_id")){
+            if(!interaction.options.getUser('target') && !interaction.options.getString("target_id")){
                 return interaction.editReply("You must either include the user or their discord ID.")
             }
             const target = interaction.options.getUser('target')

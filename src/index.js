@@ -42,25 +42,33 @@ async function initialize() {
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
 
-    const command = client.commands.get(interaction.commandName);
-    
+    const { commandName, options } = interaction;
+    const subcommand = options.getSubcommand(false); // Get subcommand if exists
+
+    const fullCommand = subcommand ? `${commandName} ${subcommand}` : commandName;
+
+    const command = client.commands.get(fullCommand);
+
     if (!command) {
-        console.error(`No command matching ${interaction.commandName} was found.`);
+        console.error(`No command matching ${fullCommand} was found.`);
         return;
     }
-    
+
     try {
-        // Pass client to the comman
         await interaction.deferReply();
-        if (interaction.guild.id != guildId && interaction.user.id != ownerId){
-            return interaction.editReply("The bot only works in the Federal Guard Academy server.")
+
+        // Restriction check (same as before)
+        if (interaction.guild.id !== guildId && interaction.user.id !== ownerId) {
+            return interaction.editReply("The bot only works in the Federal Guard Academy server.");
         }
+
         await command.execute(interaction, client);
     } catch (error) {
-        console.error(`Error executing ${interaction.commandName}`);
-        console.error(error);
+        console.error(`Error executing ${fullCommand}:`, error);
+        await interaction.editReply("❌ An error occurred while executing this command.");
     }
 });
+
 
 client.once(`ready`, async () => {
     logstuff(client,`✅ Logged in as ${client.user.tag}`);

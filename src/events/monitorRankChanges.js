@@ -1,6 +1,6 @@
 const { promo_channel, groupId } = require("../configs/config.json")
 const noblox = require("noblox.js")
-const { logstuff, logerror } = require("../utils/utils")
+const { logerror } = require("../utils/utils")
 const { embed_rankchange } = require("../utils/embeds.js")
 const { fetchExecutorFromAuditLog, retry } = require("../utils/utils.js")
 
