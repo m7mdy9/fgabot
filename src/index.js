@@ -1,4 +1,4 @@
-require('dotenv').config();
+require("dotenv").config();
 const { Client, GatewayIntentBits, EmbedBuilder, REST, Routes, SlashCommandBuilder, SortOrderType, parseEmoji, Collection } = require('discord.js');
 const noblox = require('noblox.js');
 const { deploySlashCommands } = require('./utils/commandHandler.js'); // Import the deploy function
