@@ -10,9 +10,9 @@ function bot_status(){
 async function checkBotStatus() {
     const statusElement = document.getElementById('botStatus');
     try {
-        const response = await fetch('https://pregnant-corenda-m7mdy9-c1ea62b9.koyeb.app/status');
+        const response = await fetch('https://pregnant-corenda-m7mdy9-c1ea62b9.koyeb.app');
         const status = await response.text(); // Assuming the response is just plain text
-
+        console.log(status)
         // Display the bot status in the div
         if (status === 'Bot is alive!') {
             statusElement.textContent = 'The bot is alive!';
