@@ -23,8 +23,6 @@ let previousGroupRanks = {};
 let isFirstRun = true;
 client.commands = new Collection();
 
-console.log(botToken)
-
 async function initialize() {
     await retry(async () => {
         await noblox.setCookie(ROBLOSECURITY);
