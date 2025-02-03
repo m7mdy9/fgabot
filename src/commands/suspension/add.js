@@ -96,7 +96,7 @@ module.exports = {
                     name: "Expiration date",value: `<t:${unbanTime}:F> (<t:${unbanTime}:R>)`,inline: true}
                     ]);
             const embed2 = embed_builder("Suspension", 
-                `You have been suspending in the Federal Guard Academy for ${makedurationbigger(duration)} for the following reason(s):\n- ${reason} \n\nIf think you got suspended wrongly or something similar, direct message a Deputy Director or higher.`,
+                `You have been suspended in the Federal Guard Academy for ${makedurationbigger(duration)} for the following reason(s):\n- ${reason} \n\nIf think you got suspended wrongly or something similar, direct message a Deputy Director or higher.`,
                 "DarkRed"               
         )
             embed2.setTimestamp(Date.now());
