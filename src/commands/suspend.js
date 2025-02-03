@@ -1,5 +1,6 @@
 const { embed_builder } = require("../utils/embeds.js");
 const { retry, getUserRankIndex, noblox, parseDuration, makedurationbigger, logerror, chnlsend} = require("../utils/utils.js")
+const { User } = require("../events/mongodb.js")
 require('dotenv').config({ path: '../.env' })
 const groupId = process.env.groupID
 let rankData = [];
@@ -100,12 +101,33 @@ module.exports = {
                 "DarkRed"               
         )
             embed2.setTimestamp(Date.now());
-
+            let user2 = await User.findOne({
+                discordId: user.id
+            })
+            if(user2){
+                console.log(user2)
+                return interaction.editReply("User already suspended.")
+            }
+            let user1 = new User({
+                discordId: user.id,
+                suspended_by: interaction.member.displayName,
+                suspender_id: interaction.user.id,
+                started_on: (new Date()).toLocaleString(),
+                expires_on: new Date(Date.now()+parseDuration(duration)).toLocaleString(),
+                in_days: makedurationbigger(duration),
+                in_ms: Date.now()+parseDuration(duration),
+            })
+            await user1.save() 
             await chnlsend(client, "1332366775811051530", { embeds: [embed1] })
             await usertodm.send({ embeds: [embed2] })
             await interaction.editReply(`User <@!${user.id}> suspended successfully.`)
         } catch(error){
-            console.error(error)
+            if(error.message === "Invalid usage"){ 
+                interaction.editReply("You have entered the wrong time format.")
+            }
+            else{
+                interaction.editReply("An error has occured.")
+            }
             logerror(client,`Error in suspend: `, error)
         }
      }

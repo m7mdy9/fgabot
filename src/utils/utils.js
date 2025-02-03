@@ -2,6 +2,7 @@ require('dotenv').config({ path: '../.env' })
 const noblox = require("noblox.js")
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js")
 const { groupId } = require("../configs/config.json")
+
 async function getUserRankIndex(userId) {
     try {
         const rank = await noblox.getRankInGroup(groupId, userId);
@@ -11,6 +12,23 @@ async function getUserRankIndex(userId) {
 
     }
 }
+async function fetchExecutorFromAuditLog(targetId) {
+    try {
+        const auditLogEntries = await noblox.getAuditLog({group: groupId, actionType: "ChangeRank", sortOrder: "Desc", limit: 10});
+        const recentActions = auditLogEntries.data.filter(item => item.description.TargetId === targetId)
+        const executorsWithRoles = recentActions.map(action => ({
+            username: action.actor.user.username,
+            role: action.actor.role.name
+        }));
+         
+        return executorsWithRoles
+        } catch (error) {
+        console.error("Error fetching audit log:", error);
+        logerror(client, `Error in fetch Audit log: `, error)
+        return null;
+        }
+}
+
 async function retry(fn, maxRetries = 3, delayMs = 2000) {
     let attempts = 0;
     let lastError;
@@ -59,7 +77,7 @@ function makedurationbigger(duration) {
         case 'd': return value + " day(s)" // Days to milliseconds
         case 'h': return value +  " hour(s)"   // Hours to milliseconds
         case 'm': return value + " minute(s)"        // Minutes to milliseconds
-        default: return null;
+        default: throw new Error("Invalid usage");
     }
     
 }
@@ -124,6 +142,7 @@ module.exports = {
     logstuff,
     logerror,
     getUserRankIndex,
+    fetchExecutorFromAuditLog,
     SlashCommandBuilder,
     EmbedBuilder,
     noblox

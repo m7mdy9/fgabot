@@ -2,9 +2,11 @@ require('dotenv').config();
 const { Client, GatewayIntentBits, EmbedBuilder, REST, Routes, SlashCommandBuilder, SortOrderType, parseEmoji, Collection } = require('discord.js');
 const noblox = require('noblox.js');
 const { deploySlashCommands } = require('./utils/commandHandler.js'); // Import the deploy function
-const { retry, logstuff, logerror } = require("./utils/utils.js")
-const { embed_rankchange } = require("./utils/embeds.js")
-const express = require('express');
+const { retry, logstuff } = require("./utils/utils.js")
+const { connect_db } = require("./events/mongodb.js")
+const { monitorRankChanges } = require("./events/monitorRankChanges.js")
+const { startServer } = require("./events/server.js")
+const { CheckSuspensions } = require("./events/CheckSuspensions.js")
 
 noblox.settings.timeout = 300000;
 const botToken = process.env.DISCORDTOKEN;
@@ -20,27 +22,7 @@ let rankData = [];
 let previousGroupRanks = {};
 let isFirstRun = true;
 client.commands = new Collection();
-const app = express();
 
-// Use the port from the environment variable (Railway assigns this)
-const port = process.env.PORT || 3000;
-// Define a route to handle incoming requests
-app.get('/', (req, res) => {
-  res.send('Bot is alive!');
-});
-
-
-// Start the Express server on the port
-app.listen(port, () => {
-  logstuff(client,`Server running on port ${port}`);
-});
-app.get('/favicon.ico', (req, res) => {
-  res.status(204); // No Content
-});
-app.get('/health', (req, res) => {
-    res.status(200).json({ status: 'healthy', uptime: process.uptime() });
-});
-// Retry function to handle timeouts or failed requests
 
 async function initialize() {
     await retry(async () => {
@@ -66,7 +48,7 @@ client.on('interactionCreate', async interaction => {
         console.error(`No command matching ${interaction.commandName} was found.`);
         return;
     }
-
+    
     try {
         // Pass client to the comman
         await interaction.deferReply();
@@ -79,64 +61,17 @@ client.on('interactionCreate', async interaction => {
         console.error(error);
     }
 });
-async function fetchExecutorFromAuditLog(targetId) {
-    try {
-        const auditLogEntries = await noblox.getAuditLog({group: groupId, actionType: "ChangeRank", sortOrder: "Desc", limit: 10});
-        const recentActions = auditLogEntries.data.filter(item => item.description.TargetId === targetId)
-        const executorsWithRoles = recentActions.map(action => ({
-            username: action.actor.user.username,
-            role: action.actor.role.name
-        }));
-         
-        return executorsWithRoles
-        } catch (error) {
-        console.error("Error fetching audit log:", error);
-        logerror(client, `Error in fetch Audit log: `, error)
-        return null;
-        }
-}
-async function monitorRankChanges() {
-    try {
-        const logChannel = await client.channels.fetch(logChannelId);
-        for (const rank of rankData) {
-            const users = await retry(async () => await noblox.getPlayers(groupId, rank.id));
-            for (const user of users) {
-                const currentRank = rank.name;
-                const previousRank = previousGroupRanks[user.userId] || currentRank;
-                if (previousRank !== currentRank && !isFirstRun) {
-                    const executor = await fetchExecutorFromAuditLog(user.userId);
-                    const currentTimestamp = Math.floor(Date.now() / 1000); // Convert milliseconds to seconds
-                    const action = rankData.find(r => r.name === currentRank).rank > rankData.find(r => r.name === previousRank).rank ? 'Promotion' : 'Demotion';
-                    let exevalue,exerole;
-                    const timestamp = `<t:${currentTimestamp}:f>`
-                    try {
-                    exevalue = executor[0].username
-                    exerole = executor[0].role
-                } catch (error){
-                    logerror(client, `Error in the values for promo embed: `, error)
-                    exevalue = "Unknown"
-                    exerole = "Unknown"
-                }
-                    const usernamevalue = user.username || "Unknown";
-                    const embed = embed_rankchange(action, exevalue, exerole, usernamevalue, previousRank, currentRank, timestamp) 
-                    await logChannel.send({ embeds: [embed] });
-                }
-                previousGroupRanks[user.userId] = currentRank;
-            }
-        }
-    } catch (error) {
-        const logChannel = await client.channels.fetch(logChannelId);
-if (logChannel) logChannel.send("An error has occurred.");
-        logerror(client, `Error in rank minotring: `, error)
-        console.error('Error monitoring rank changes:', error);
-    }
-}
+
 client.once(`ready`, async () => {
     logstuff(client,`✅ Logged in as ${client.user.tag}`);
+    startServer();
     await initialize();
+    await connect_db();
+    logstuff(client, `Successfully connected to MangoDB.`)
     await deploySlashCommands(client, clientId, guildId);
     logstuff(client, `Slash commands successfully deployed.`)
-    setInterval(async () => { await monitorRankChanges() }, 1000);
+    setInterval(async () => { await monitorRankChanges(client, rankData, previousGroupRanks, isFirstRun) }, 1500);
+    setInterval(async () => { await CheckSuspensions(client) }, 30*60*1000)
 });
 
 client.on('rateLimit', (rateLimitInfo) => {
@@ -146,6 +81,7 @@ client.on('rateLimit', (rateLimitInfo) => {
 // Bot login
 client.login(botToken).catch((error) => {
     console.error('Failed to login:', error);
+    process.exit(1)
 });
 
 function getlogchannelid(){
