@@ -23,7 +23,6 @@ let previousGroupRanks = {};
 let isFirstRun = true;
 client.commands = new Collection();
 
-
 async function initialize() {
     await retry(async () => {
         await noblox.setCookie(ROBLOSECURITY);
