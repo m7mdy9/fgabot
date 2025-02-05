@@ -1,6 +1,22 @@
-const { logerror} = require("../../utils/utils.js")
+const { logerror, retry, getUserRankIndex } = require("../../utils/utils.js")
 const { User } = require("../../events/mongodb.js")
+const noblox = require("noblox.js")
+const { groupId } = require("../../configs/config.json")
 require('dotenv').config()
+let rankData = [];
+let previousGroupRanks = {};
+retry(async () => {
+    rankData = await noblox.getRoles(groupId);
+    
+    for (const rank of rankData) {
+        const users = await noblox.getPlayers(groupId, rank.id);
+        for (const user of users) {
+            previousGroupRanks[user.userId] = rank.name;
+        }
+    }
+    // console.log(rankData, previousGroupRanks);
+});
+
 
 module.exports = {
     name: "remove", // Command name
@@ -21,6 +37,17 @@ module.exports = {
     ],
     async execute(interaction){
         const client = interaction.client
+        let executorId, executorRankIndex;
+        try {
+            executorId = await retry(async () => await noblox.getIdFromUsername(interaction.member.displayName));
+            executorRankIndex = await retry(async () => await getUserRankIndex(executorId));
+        } catch(error) {
+            return interaction.editReply(`❌ Your current server nickname does not match any Roblox user.`);
+        }
+        
+        if (executorRankIndex < rankData.find(rank => rank.name === `[Deputy Director]`).rank) {
+            return interaction.editReply(`❌ You do not have permission to use this command.`);
+        }
         try {
             if(!interaction.options.getUser('target') && !interaction.options.getString("target_id")){
                 return interaction.editReply("You must either include the user or their discord ID.")
