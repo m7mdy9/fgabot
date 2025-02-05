@@ -4,13 +4,11 @@ const { SlashCommandBuilder, EmbedBuilder } = require("discord.js")
 const { groupId } = require("../configs/config.json")
 
 async function getUserRankIndex(userId) {
-    try {
+    if(!userId){
+        throw new Error("No userId was provided in the getUserRankIndex.")
+    }
         const rank = await noblox.getRankInGroup(groupId, userId);
         return rank;
-    } catch (error) {
-        return console.error(error)
-
-    }
 }
 async function fetchExecutorFromAuditLog(targetId) {
     try {

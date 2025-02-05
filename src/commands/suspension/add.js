@@ -1,7 +1,7 @@
 const { embed_builder } = require("../../utils/embeds.js");
 const { retry, getUserRankIndex, noblox, parseDuration, makedurationbigger, logerror, chnlsend} = require("../../utils/utils.js")
-const { User } = require("../../events/mongodb.js")
-const { groupId } = require("../../configs/config.json")
+const { User } = require("../../utils/mongodb.js")
+const { groupId, dd_role_id } = require("../../configs/config.json")
 let rankData = [];
 let previousGroupRanks = {};
 retry(async () => {
@@ -59,12 +59,22 @@ module.exports = {
             try {
                 executorId = await retry(async () => await noblox.getIdFromUsername(interaction.member.displayName));
                 executorRankIndex = await retry(async () => await getUserRankIndex(executorId));
+                console.log(executorId, executorRankIndex, rankData.find(rank => rank.name === `[Deputy Director]`).rank)
+                // if (executorRankIndex < rankData.find(rank => rank.name === `[Deputy Director]`).rank) {
+                //     return interaction.editReply(`❌ You do not have permission to use this command.`);
+                // }
             } catch(error) {
-                return interaction.editReply(`❌ Your current server nickname does not match any Roblox user.`);
+                console.error(error)
+                // return interaction.editReply(`❌ Your current server nickname does not match any Roblox user.`);
             }
-            
-            if (executorRankIndex < rankData.find(rank => rank.name === `[Deputy Director]`).rank) {
-                return interaction.editReply(`❌ You do not have permission to use this command.`);
+            if (interaction.member.roles.highest.position < interaction.guild.roles.cache.get(dd_role_id).position){
+                return interaction.editReply("❌ You do not have permission to use this command.")
+            }
+            let user_in_db = await User.findOneAndDelete({
+                discordId: target_id
+            })
+            if(user_in_db){
+                return interaction.editReply(`User is already suspended, you may remove this suspension and re-add it if you want to make changes.`)
             }
             await member.roles.add("1302266631329808384")
             const embed1 = embed_builder("New Suspension", `A new suspension has been made!`, "DarkNavy")
@@ -109,6 +119,7 @@ module.exports = {
             }
             let user1 = new User({
                 discordId: user.id,
+                suspeneded_id: member.displayName,
                 suspended_by: interaction.member.displayName,
                 suspender_id: interaction.user.id,
                 started_on: (new Date()).toLocaleString(),

@@ -1,7 +1,7 @@
     const { SlashCommandBuilder, EmbedBuilder } = require("discord.js")
     const { logstuff } = require("../utils/utils.js")
     const { getclient } = require("../index.js")
-    const { User } = require("../events/mongodb.js")
+    const { User } = require("../utils/mongodb.js")
     require('dotenv').config({ path: '../.env' })
     const ownerId = process.env.ownerId
     module.exports = {

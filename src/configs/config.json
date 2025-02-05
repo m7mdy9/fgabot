@@ -4,5 +4,7 @@
     "promo_channel":"1325050995578765355",
     "groupId":"35417960",
     "guildId":"972498667674140732",
-    "suspension_role_id":"1302266631329808384"
+    "suspension_role_id":"1302266631329808384",
+    "instructor_role_id": "972500399498076220",
+    "dd_role_id": "1264641575867387976"
 }

@@ -18,6 +18,7 @@ const connect_db = async () => {
 // Define the user schema
 const suspension_Schema = new mongoose.Schema({
     discordId: String,
+    suspeneded_id: String,
     suspended_by: String,
     suspender_id: String,
     started_on: String,
@@ -27,6 +28,7 @@ const suspension_Schema = new mongoose.Schema({
 });
 const strike_Schema = new mongoose.Schema({
     striked_id: String,
+    striked_name: String,
     striker_name: String,
     striker_id: String,
     started_on: String,

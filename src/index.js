@@ -3,9 +3,9 @@ const { Client, GatewayIntentBits, EmbedBuilder, REST, Routes, SlashCommandBuild
 const noblox = require('noblox.js');
 const { deploySlashCommands } = require('./utils/commandHandler.js'); // Import the deploy function
 const { retry, logstuff } = require("./utils/utils.js")
-const { connect_db } = require("./events/mongodb.js")
+const { connect_db } = require("./utils/mongodb.js")
 const { monitorRankChanges } = require("./events/monitorRankChanges.js")
-const { startServer } = require("./events/server.js")
+const { startServer } = require("./utils/server.js")
 const { CheckSuspensions } = require("./events/CheckSuspensions.js")
 
 noblox.settings.timeout = 300000;
@@ -40,7 +40,6 @@ async function initialize() {
 }
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
-
     const { commandName, options } = interaction;
     const subcommand = options.getSubcommand(false); // Get subcommand if exists
 
@@ -70,7 +69,10 @@ client.on('interactionCreate', async interaction => {
         await interaction.editReply("❌ An error occurred while executing this command.");
     }
 });
-
+const guildadd = require("./events/MemberJoin.js")
+client.on(guildadd.name, (...args) =>{
+    event.execute(...args)
+})
 
 client.once(`ready`, async () => {
     logstuff(client,`✅ Logged in as ${client.user.tag}`);

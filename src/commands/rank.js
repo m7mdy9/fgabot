@@ -1,7 +1,7 @@
 const { retry, getUserRankIndex, noblox, logerror } = require("../utils/utils.js");
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 require('dotenv').config({ path: '../.env' });
-const { ownerId, groupId, promo_channel } = require("../configs/config.json")
+const { ownerId, groupId, promo_channel, instructor_role_id } = require("../configs/config.json")
 
 let rankData = [];
 let rankChoices = [];
@@ -42,18 +42,21 @@ module.exports = {
         const rankName = interaction.options.getString('rank');
 
         try {
-            let userId, executorId;
+            // let userId, executorId;
 
-            try {
-                executorId = await retry(async () => await noblox.getIdFromUsername(interaction.member.displayName));
-            } catch (error) {
-                await interaction.editReply('❌ Your current server nickname does not match any Roblox user.');
-                return logerror(client, 'Error with non-matching username:', error);
-            }
+            // try {
+            //     executorId = await retry(async () => await noblox.getIdFromUsername(interaction.member.displayName));
+            // } catch (error) {
+            //     await interaction.editReply('❌ Your current server nickname does not match any Roblox user.');
+            //     return logerror(client, 'Error with non-matching username:', error);
+            // }
 
-            const executorRankIndex = await retry(async () => await getUserRankIndex(executorId));
-            if (executorRankIndex < rankData.find(rank => rank.name === '[Instructor]').rank && interaction.user.id != ownerId) {
-                return interaction.editReply('❌ You do not have permission to use this command.');
+            // const executorRankIndex = await retry(async () => await getUserRankIndex(executorId));
+            // if (executorRankIndex < rankData.find(rank => rank.name === '[Instructor]').rank && interaction.user.id != ownerId) {
+            //     return interaction.editReply('❌ You do not have permission to use this command.');
+            // }
+            if (interaction.member.roles.highest.position < interaction.guild.roles.cache.get(instructor_role_id).position){
+                return interaction.editReply("❌ You do not have permission to use this command.")
             }
 
             try {

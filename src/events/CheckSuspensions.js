@@ -1,4 +1,4 @@
-const { User } = require("./mongodb.js");
+const { User } = require("../utils/mongodb.js");
 const { guildId, suspension_role_id } = require("../configs/config.json");
 
 async function CheckSuspensions(client) {
