@@ -1,7 +1,7 @@
-const { logerror, retry, getUserRankIndex } = require("../../utils/utils.js")
+const { logerror, retry, getUserRankIndex, chnlsend } = require("../../utils/utils.js")
 const { User } = require("../../utils/mongodb.js")
 const noblox = require("noblox.js")
-const { groupId, dd_role_id } = require("../../configs/config.json")
+const { groupId, dd_role_id, sus_channel } = require("../../configs/config.json")
 require('dotenv').config()
 // let rankData = [];
 // let previousGroupRanks = {};
@@ -68,6 +68,7 @@ module.exports = {
             })
             if(user){
                 await usertodm.send(`Your suspension have been removed.`)
+                await chnlsend(client, sus_channel, `Suspension for <@!${target_id}> has been removed by <@!${interaction.user.id}>`)
                 return interaction.editReply(`Suspension for <@!${target_id}> is removed.`)
             } else {
                 return interaction.editReply(`Target, <@!${target_id}> is not suspended.`)

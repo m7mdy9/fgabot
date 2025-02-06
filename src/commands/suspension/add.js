@@ -61,21 +61,24 @@ module.exports = {
                 executorRankIndex = await retry(async () => await getUserRankIndex(executorId));
                 console.log(executorId, executorRankIndex, rankData.find(rank => rank.name === `[Deputy Director]`).rank)
                 // if (executorRankIndex < rankData.find(rank => rank.name === `[Deputy Director]`).rank) {
-                //     return interaction.editReply(`❌ You do not have permission to use this command.`);
-                // }
-            } catch(error) {
-                console.error(error)
-                // return interaction.editReply(`❌ Your current server nickname does not match any Roblox user.`);
-            }
-            if (interaction.member.roles.highest.position < interaction.guild.roles.cache.get(dd_role_id).position){
-                return interaction.editReply("❌ You do not have permission to use this command.")
-            }
-            let user_in_db = await User.findOneAndDelete({
-                discordId: target_id
-            })
-            if(user_in_db){
-                return interaction.editReply(`User is already suspended, you may remove this suspension and re-add it if you want to make changes.`)
-            }
+                    //     return interaction.editReply(`❌ You do not have permission to use this command.`);
+                    // }
+                } catch(error) {
+                    console.error(error)
+                    // return interaction.editReply(`❌ Your current server nickname does not match any Roblox user.`);
+                }
+                if (interaction.member.roles.highest.position < interaction.guild.roles.cache.get(dd_role_id).position){
+                    return interaction.editReply("❌ You do not have permission to use this command.")
+                }
+                let user_in_db = await User.findOneAndDelete({
+                    discordId: user.id
+                })
+                if(user_in_db){
+                    return interaction.editReply(`User is already suspended, you may remove this suspension and re-add it if you want to make changes.`)
+                }
+                if (!parseDuration(duration)){
+                    return interaction.editReply("Invalid time usage, use time like this: \n10d (for 10 days), 10h (for 10 hours)\nKeep in mind there is no months nor years.")
+                }
             await member.roles.add("1302266631329808384")
             const embed1 = embed_builder("New Suspension", `A new suspension has been made!`, "DarkNavy")
             embed1.setTimestamp(Date.now())
