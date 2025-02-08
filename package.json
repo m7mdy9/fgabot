@@ -1,6 +1,6 @@
 {
   "name": "fgabot",
-  "version": "1.7.3",
+  "version": "1.8",
   "description": "Federal Guard Academy bot made for automating stuff in FGA.",
   "dependencies": {
     "axios": "^1.7.9",
@@ -37,9 +37,7 @@
     "start": "node src/index.js",
     "build": "echo 'No build step required for plain JavaScript... - m7mdy9'",
     "deploy": "koyeb deploy ./ pregnant-corenda/fgabot",
-    "upload": "git add src/* docs/* *.json && git commit -m \"Automated Commit.\" && git push",
-    "pause": "koyeb scale pregnant-corenda/fgabot --scale 0",
-    "resume": "koyeb scale pregnant-corenda/fgabot --scale 1"
+    "upload": "git add src/* docs/* *.json && git commit -m \"Automated Commit.\" && git push"
   },
   "homepage": "https://m7mdy9.github.io/fgabot"
 }

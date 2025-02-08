@@ -22,11 +22,11 @@ function embed_rankchange(action, exevalue, exerole, usernamevalue, previousRank
         embed.addFields(
             { name: 'User Executing', value: exevalue, inline: true },
             { name: 'User\'s Rank', value: exerole, inline: true },
-            { name: 'Unit Affected', value: usernamevalue, inline: true },
+            { name: 'Date', value: timestamp, inline: true },
             { name: '\u200b', value: '\u200b', inline:false},
+            { name: 'Unit Affected', value: usernamevalue, inline: true },
             { name: 'Old Rank', value: previousRank, inline: true },
-            { name: 'New Rank', value: currentRank, inline: true },
-            { name: 'Date', value: timestamp, inline: true }
+            { name: 'New Rank', value: currentRank, inline: true }
         );
         return embed
     } catch(error){

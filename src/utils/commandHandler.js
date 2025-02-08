@@ -33,8 +33,8 @@ async function loadCommands(client) {
         }
 
         // Validate the command structure
-        if (!command.data.name || !command.data.description) {
-            console.error(`❌ Skipping "${file}": Missing required "name" or "description" properties.`);
+        if (!command.data.name || !command.data.description || !command.execute) {
+            console.error(`❌ Skipping "${file}": Missing required "name" or "description" or "execute" properties.`);
             continue;
         }
 
@@ -77,8 +77,8 @@ async function loadCommands(client) {
             }
 
             // Validate that the subcommand has a name and description
-            if (!subcommand.data.name || !subcommand.data.description) {
-                console.error(`❌ Skipping "${file}" in folder "${folder}": Missing required "name" or "description" properties.`);
+            if (!subcommand.data.name || !subcommand.data.description || !subcommand.execute) {
+                console.error(`❌ Skipping "${file}" in folder "${folder}": Missing required "name" or "description" or "execute" properties.`);
                 continue;
             }
 
@@ -87,56 +87,77 @@ async function loadCommands(client) {
                 sub = sub.setName(subcommand.data.name)
                          .setDescription(subcommand.data.description);
                 // Loop through options if any are provided
-                if (Array.isArray(subcommand.data.options)) {
-                    for (const option of subcommand.data.options) {
-                        // The option types here use numeric values.
-                        // 3: String, 4: Integer, 5: Boolean, 6: User, 7: Channel, 8: Role
-                        switch(option.type) {
-                            case 3: // String option
-                                sub.addStringOption(opt =>
-                                    opt.setName(option.name)
-                                       .setDescription(option.description)
-                                       .setRequired(option.required || false)
-                                );
-                                break;
-                            case 4: // Integer option
-                                sub.addIntegerOption(opt =>
-                                    opt.setName(option.name)
-                                       .setDescription(option.description)
-                                       .setRequired(option.required || false)
-                                );
-                                break;
-                            case 5: // Boolean option
-                                sub.addBooleanOption(opt =>
-                                    opt.setName(option.name)
-                                       .setDescription(option.description)
-                                       .setRequired(option.required || false)
-                                );
-                                break;
-                            case 6: // User option
-                                sub.addUserOption(opt =>
-                                    opt.setName(option.name)
-                                       .setDescription(option.description)
-                                       .setRequired(option.required || false)
-                                );
-                                break;
-                            case 7: // Channel option
-                                sub.addChannelOption(opt =>
-                                    opt.setName(option.name)
-                                       .setDescription(option.description)
-                                       .setRequired(option.required || false)
-                                );
-                                break;
-                            case 8: // Role option
-                                sub.addRoleOption(opt =>
-                                    opt.setName(option.name)
-                                       .setDescription(option.description)
-                                       .setRequired(option.required || false)
-                                );
-                                break;
-                            default:
-                                console.warn(`Unknown option type ${option.type} for option ${option.name}`);
-                                break;
+                    if (Array.isArray(subcommand.data.options)) {
+                        for (const option of subcommand.data.options) {
+                            // The option types here use numeric values.
+                            // 3: String, 4: Integer, 5: Boolean, 6: User, 7: Channel, 8: Role, 9: Mentionable, 10: Number, 11: Attachment
+                            switch (option.type) {
+                                case 3: // String option
+                                    sub.addStringOption(opt =>
+                                        opt.setName(option.name)
+                                        .setDescription(option.description)
+                                        .setRequired(option.required || false)
+                                    );
+                                    break;
+                                case 4: // Integer option
+                                    sub.addIntegerOption(opt =>
+                                        opt.setName(option.name)
+                                        .setDescription(option.description)
+                                        .setRequired(option.required || false)
+                                    );
+                                    break;
+                                case 5: // Boolean option
+                                    sub.addBooleanOption(opt =>
+                                        opt.setName(option.name)
+                                        .setDescription(option.description)
+                                        .setRequired(option.required || false)
+                                    );
+                                    break;
+                                case 6: // User option
+                                    sub.addUserOption(opt =>
+                                        opt.setName(option.name)
+                                        .setDescription(option.description)
+                                        .setRequired(option.required || false)
+                                    );
+                                    break;
+                                case 7: // Channel option
+                                    sub.addChannelOption(opt =>
+                                        opt.setName(option.name)
+                                        .setDescription(option.description)
+                                        .setRequired(option.required || false)
+                                    );
+                                    break;
+                                case 8: // Role option
+                                    sub.addRoleOption(opt =>
+                                        opt.setName(option.name)
+                                        .setDescription(option.description)
+                                        .setRequired(option.required || false)
+                                    );
+                                    break;
+                                case 9: // Mentionable option (can be a user or role)
+                                    sub.addMentionableOption(opt =>
+                                        opt.setName(option.name)
+                                        .setDescription(option.description)
+                                        .setRequired(option.required || false)
+                                    );
+                                    break;
+                                case 10: // Number option (floating-point number)
+                                    sub.addNumberOption(opt =>
+                                        opt.setName(option.name)
+                                        .setDescription(option.description)
+                                        .setRequired(option.required || false)
+                                    );
+                                    break;
+                                case 11: // Attachment option
+                                    sub.addAttachmentOption(opt =>
+                                        opt.setName(option.name)
+                                        .setDescription(option.description)
+                                        .setRequired(option.required || false)
+                                    );
+                                    break;
+                                default:
+                                    console.warn(`Unknown option type ${option.type} for option ${option.name}`);
+                                    break;
                         }
                     }
                 }

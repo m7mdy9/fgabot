@@ -18,9 +18,11 @@ const connect_db = async () => {
 // Define the user schema
 const suspension_Schema = new mongoose.Schema({
     discordId: String,
-    suspeneded_id: String,
+    suspeneded_name: String,
     suspended_by: String,
     suspender_id: String,
+    reason: String,
+    proof: String,
     started_on: String,
     expires_on: String,
     in_days: String,
@@ -29,12 +31,14 @@ const suspension_Schema = new mongoose.Schema({
 const strike_Schema = new mongoose.Schema({
     striked_id: String,
     striked_name: String,
+    strike_no: String,
     striker_name: String,
     striker_id: String,
-    started_on: String,
     reason: String,
+    proof: String,
+    started_on: String,
     expiry_date: String,
-    expiry_ms: String,
+    in_ms: String,
 });
 
 // Create the User model

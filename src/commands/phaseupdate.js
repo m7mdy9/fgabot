@@ -1,6 +1,5 @@
 const { getUserRankIndex, logerror, retry, noblox } = require("../utils/utils.js")
-require('dotenv').config({ path: '../.env' })
-const groupId = process.env.groupID
+const { groupId, instructor_role_id, ownerId } = require('../configs/config.json')
 let rankData = [];
 let previousGroupRanks = {};
     retry(async () => {
@@ -20,6 +19,9 @@ module.exports = {
     description: `Sync your current group rank with current roles`,
     async execute(interaction){
         const client = interaction.client
+        const user_id = interaction.user.id
+        const highest_role_pos = interaction.member.roles.highest.position
+        const ins_role_pos = client.guild.roles.cache.get(instructor_role_id).position
         const executorId = await retry(async () => await noblox.getIdFromUsername(interaction.member.displayName));
         const executorRankIndex = await retry(async () => await getUserRankIndex(executorId));
         let UserPhase = ""
@@ -44,7 +46,7 @@ module.exports = {
                 if(UserPhase === ""){
                     return interaction.editReply("You do not have any phase role.")
                 } 
-                if (executorRankIndex >= 6){
+                if (executorRankIndex >= 6 && user_id !== ownerId || highest_role_pos >= ins_role_pos && user_id !== ownerId){
                     return interaction.editReply("Instructor+ can not use this command.")
                 } 
                     if (executorRankIndex == rankData.find(rank => rank.name === UserPhase).rank) {
