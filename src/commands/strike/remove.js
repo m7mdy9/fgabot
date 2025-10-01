@@ -23,6 +23,13 @@ module.exports = {
     description: "Used to remove suspensions by Deputy Director or higher.", // Command description
     options: [ // Define options directly
         {
+            name: "number_of_removed_strikes",
+            description: "Number of strikes to be removed",
+            type: 3,
+            required: true,
+            choices: ["1 Strike.", "2 Strikes.", "3 Strikes."]
+        },
+        {
             name: "target",
             description: "Target user for their strike(s) to be removed.",
             type: 6, // USER type
@@ -33,13 +40,6 @@ module.exports = {
             description: "Id of user, whose strike(s) you want to remove.",
             type: 3, // String type
             required: false   
-        },
-        {
-            name: "number_of_removed_strikes",
-            description: "Number of strikes to be removed",
-            type: 3,
-            required: true,
-            choices: ["1 Strike.", "2 Strikes.", "3 Strikes."]
         }
     ],
     async execute(interaction){
